@@ -1,0 +1,197 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.shapes-container {
+  display: flex;
+  gap: 50px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.shape {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+/* Retângulo */
+.rectangle {
+  background-color: #f0f0f0;
+  border: 2px solid #ddd;
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.dimension-label {
+  position: absolute;
+  font-weight: bold;
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  min-width: 60px;
+  text-align: center;
+}
+
+.top {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.left {
+  left: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.right {
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+}
+
+/* Triângulo SVG */
+.triangle-container {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #ddd;
+  background-color: #f0f0f0;
+}
+
+.triangle-svg {
+  width: 100%;
+  height: 100%;
+  max-height: 300px;
+}
+
+.triangle-path {
+  fill: #f0f0f0;
+  stroke: #ddd;
+  stroke-width: 2;
+}
+
+.svg-label {
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Formulário e Resultados */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+.calculate-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 1.5rem 0;
+  transition: background-color 0.2s;
+}
+
+.calculate-button:hover {
+  background-color: #0052a3;
+}
+
+.calculate-button:active {
+  background-color: #004080;
+}
+
+.resultado {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.resultado h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.resultado p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.resultado p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .shapes-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .shape {
+    width: 100%;
+  }
+} 
