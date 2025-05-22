@@ -1,6 +1,6 @@
 # Calculadora de Corte de Cana
 
-Uma aplicação web desenvolvida em React para calcular áreas e valores de corte de cana, considerando formas geométricas como retângulos e triângulos.
+Uma aplicação web desenvolvida em React + Vite para calcular áreas e valores de corte de cana, considerando formas geométricas como retângulos e triângulos.
 
 ## Funcionalidades
 
@@ -13,6 +13,7 @@ Uma aplicação web desenvolvida em React para calcular áreas e valores de cort
 
 - React
 - TypeScript
+- Vite
 - CSS Moderno
 - SVG para gráficos vetoriais
 
@@ -29,12 +30,22 @@ cd harvest-calc-pro
 npm install
 ```
 
-3. Execute o projeto:
+3. Execute o projeto em modo de desenvolvimento:
 ```bash
-npm start
+npm run dev
 ```
 
-O aplicativo estará disponível em `http://localhost:3000`
+O aplicativo estará disponível em `http://localhost:5173`
+
+4. Para build de produção:
+```bash
+npm run build
+```
+
+5. Para preview do build:
+```bash
+npm run preview
+```
 
 ## Estrutura do Projeto
 
@@ -42,7 +53,7 @@ O aplicativo estará disponível em `http://localhost:3000`
 src/
   ├── components/        # Componentes React
   ├── App.tsx           # Componente principal
-  ├── index.tsx         # Ponto de entrada
+  ├── main.tsx          # Ponto de entrada
   └── styles/           # Arquivos CSS
 ```
 
