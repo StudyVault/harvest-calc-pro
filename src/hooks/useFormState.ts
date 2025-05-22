@@ -10,8 +10,8 @@ export const useFormState = () => {
   });
 
   const [financialData, setFinancialData] = useState<FinancialData>({
-    toneladas: 0,
-    valorPorTonelada: 0
+    toneladas: 3,
+    valorPorTonelada: 20.00
   });
 
   const handleDimensionChange = (e: InputChangeEvent) => {
@@ -33,6 +33,7 @@ export const useFormState = () => {
   return {
     dimensions,
     financialData,
+    setFinancialData,
     handleDimensionChange,
     handleFinancialChange
   };

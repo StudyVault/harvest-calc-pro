@@ -3,8 +3,8 @@ import './CalculadoraCorteCana.css';
 
 const CalculadoraCorteCana: React.FC = () => {
   const [valores, setValores] = useState({
-    toneladas: 0,
-    valorPorTonelada: 0,
+    toneladas: 3,
+    valorPorTonelada: 20.00,
     ladoA: 0,
     ladoB: 0,
     ladoC: 0,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box,
   Container,
@@ -15,20 +15,32 @@ import {
   Button,
   useToast,
   Divider,
+  InputGroup,
+  InputLeftAddon,
 } from '@chakra-ui/react';
 import { useFormState } from '../../hooks/useFormState';
 import { useAreaCalculations } from '../../hooks/useAreaCalculations';
+import { useCurrencyInput } from '../../hooks/useCurrencyInput';
 import Rectangle from './Rectangle';
 import Triangle from './Triangle';
 
 type ShapeType = 'rectangle' | 'triangle';
 
 const CalculadoraCorteCana: React.FC = () => {
-  const { dimensions, financialData, handleDimensionChange, handleFinancialChange } = useFormState();
+  const { dimensions, financialData, handleDimensionChange, handleFinancialChange, setFinancialData } = useFormState();
+  const { formatCurrency, handleCurrencyChange } = useCurrencyInput();
   const { result, calculateAreas } = useAreaCalculations();
   const [showResults, setShowResults] = useState(false);
   const [selectedShape, setSelectedShape] = useState<ShapeType>('rectangle');
+  const [displayValue, setDisplayValue] = useState(formatCurrency(financialData.valorPorTonelada));
   const toast = useToast();
+
+  const handleCurrencyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = handleCurrencyChange(e, (value) => {
+      setFinancialData(prev => ({ ...prev, valorPorTonelada: value }));
+    });
+    setDisplayValue(formattedValue);
+  };
 
   const handleCalculate = () => {
     // Validar se todos os campos necessários estão preenchidos
@@ -119,13 +131,18 @@ const CalculadoraCorteCana: React.FC = () => {
 
                     <FormControl mt={4}>
                       <FormLabel>Valor por Tonelada (R$):</FormLabel>
-                      <Input
-                        type="number"
-                        name="valorPorTonelada"
-                        value={financialData.valorPorTonelada || ''}
-                        onChange={handleFinancialChange}
-                        placeholder="Digite o valor por tonelada"
-                      />
+                      <InputGroup>
+                        <InputLeftAddon>R$</InputLeftAddon>
+                        <Input
+                          type="text"
+                          name="valorPorTonelada"
+                          value={displayValue}
+                          onChange={handleCurrencyInputChange}
+                          onFocus={(e) => e.target.select()}
+                          placeholder="0,00"
+                          inputMode="numeric"
+                        />
+                      </InputGroup>
                     </FormControl>
                   </Box>
 
