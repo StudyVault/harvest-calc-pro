@@ -57,6 +57,16 @@ src/
   └── styles/           # Arquivos CSS
 ```
 
+## Deploy
+
+Este projeto está configurado para deploy automático no GitHub Pages. Para configurar:
+
+1. No GitHub, vá para Settings > Pages
+2. Em "Source", selecione "GitHub Actions"
+3. Faça um push para a branch main e o deploy será automático
+
+O site estará disponível em `https://seu-usuario.github.io/harvest-calc-pro`
+
 ## Como Contribuir
 
 1. Faça um Fork do projeto
