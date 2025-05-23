@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -33,6 +33,7 @@ const CalculadoraCorteCana: React.FC = () => {
     ladoD: 0
   });
 
+  const [showResult, setShowResult] = useState(false);
   const { displayValue, handlePercentageChange } = usePercentageInput(valores.valorPorTonelada);
 
   const [resultado, setResultado] = useState({
@@ -52,6 +53,27 @@ const CalculadoraCorteCana: React.FC = () => {
   const [selectedShape, setSelectedShape] = useState<'rectangle' | 'triangle'>('rectangle');
 
   const toast = useToast();
+
+  // Efeito para controlar a exibição do resultado
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showResult && resultado.valorTotal > 0) {
+      console.log('Iniciando timer de 60 segundos...'); // Debug log
+      timer = setTimeout(() => {
+        console.log('Timer finalizado, ocultando resultado...'); // Debug log
+        setShowResult(false);
+        setResultado(prev => ({
+          ...prev,
+          valorTotal: 0
+        }));
+      }, 60000); // 60 segundos
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [showResult, resultado.valorTotal]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -135,10 +157,12 @@ const CalculadoraCorteCana: React.FC = () => {
       return;
     }
 
+    // Primeiro, reseta qualquer resultado anterior
+    setShowResult(false);
+    
     let cubagem = 0;
     let valorTotal = 0;
 
-    // Guarda os valores dos lados antes de resetar
     const ladosUsados = {
       ladoA: valores.ladoA,
       ladoB: valores.ladoB,
@@ -155,23 +179,7 @@ const CalculadoraCorteCana: React.FC = () => {
     const valorPorToneladaTotal = valores.toneladas * valores.valorPorTonelada;
     valorTotal = cubagem * valorPorToneladaTotal;
 
-    // Log detalhado para debug
-    console.log('Valores do cálculo:', {
-      shape: selectedShape,
-      lados: { A: valores.ladoA, B: valores.ladoB, C: valores.ladoC, D: valores.ladoD },
-      mediaAB: (valores.ladoA + valores.ladoB) / 2,
-      baseC: selectedShape === 'triangle' ? valores.ladoC / 2 : (valores.ladoC + valores.ladoD) / 2,
-      cubagem,
-      valorPorTonelada: valores.valorPorTonelada,
-      toneladas: valores.toneladas,
-      valorPorToneladaTotal,
-      valorTotal,
-      debug: {
-        calculo1: valores.toneladas * valores.valorPorTonelada,
-        calculo2: cubagem * (valores.toneladas * valores.valorPorTonelada)
-      }
-    });
-
+    // Atualiza o resultado
     setResultado({
       cubagem,
       valorTotal,
@@ -181,7 +189,12 @@ const CalculadoraCorteCana: React.FC = () => {
       ladosUsados
     });
 
-    // Reset dos valores dos lados, mantendo toneladas e valorPorTonelada
+    // Mostra o resultado após definir os valores
+    setTimeout(() => {
+      setShowResult(true);
+    }, 0);
+
+    // Reset dos valores dos lados
     setValores(prev => ({
       ...prev,
       ladoA: 0,
@@ -190,10 +203,9 @@ const CalculadoraCorteCana: React.FC = () => {
       ladoD: 0
     }));
 
-    // Feedback visual do cálculo realizado
     toast({
       title: 'Cálculo realizado',
-      description: 'Os valores foram calculados com sucesso.',
+      description: 'Os valores foram calculados com sucesso. O resultado será exibido por 60 segundos.',
       status: 'success',
       duration: 2000,
       isClosable: true,
@@ -337,12 +349,15 @@ const CalculadoraCorteCana: React.FC = () => {
                 Calcular
               </Button>
 
-              {resultado.valorTotal > 0 && (
+              {showResult && resultado.valorTotal > 0 && (
                 <Card bg="brand.50" mt={4}>
                   <CardBody>
                     <VStack spacing={3} align="stretch">
-                      <Heading size="md" color="brand.700">
-                        Resultados:
+                      <Heading size="md" color="brand.700" display="flex" justifyContent="space-between" alignItems="center">
+                        <Text>Resultados:</Text>
+                        <Text fontSize="sm" color="gray.500">
+                          (será ocultado em 60 segundos)
+                        </Text>
                       </Heading>
                       <Box borderWidth="1px" borderRadius="md" p={3} bg="white">
                         <Text fontWeight="500" mb={2}>Valores utilizados:</Text>
