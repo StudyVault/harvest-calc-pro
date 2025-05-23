@@ -13,6 +13,9 @@ interface RectangleProps {
 const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
   const { ladoA, ladoB, ladoC, ladoD } = dimensions;
   
+  // Verificar se o retângulo é válido (todos os lados maiores que 0)
+  const isValidRectangle = ladoA > 0 && ladoB > 0 && ladoC > 0 && ladoD > 0;
+  
   return (
     <Box className="shape-container">
       <Box className="shape-visualization">
@@ -33,8 +36,10 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
             width="150"
             height="100"
             fill="#e8f5e9"
-            stroke="#2e7d32"
+            stroke={isValidRectangle ? "#2e7d32" : "#d32f2f"}
             strokeWidth="2"
+            strokeDasharray={!isValidRectangle ? "5,5" : "none"}
+            className={isValidRectangle ? "rectangle-path" : "rectangle-path invalid"}
           />
           
           {/* Labels */}

@@ -29,7 +29,7 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
         >
           {/* Triângulo base com preenchimento */}
           <path
-            d="M150,30 L50,170 L250,170 Z"
+            d="M150,50 L75,150 L225,150 Z"
             fill="#e8f5e9"
             stroke={isValidTriangle ? "#2e7d32" : "#d32f2f"}
             strokeWidth="2"
@@ -39,7 +39,7 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
           {/* Labels */}
           <g>
             {/* Label A - esquerdo */}
-            <foreignObject x="30" y="85" width="60" height="25">
+            <foreignObject x="45" y="85" width="60" height="25">
               <Box
                 bg="white"
                 px={2}
@@ -58,7 +58,7 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
             </foreignObject>
 
             {/* Label B - base */}
-            <foreignObject x="120" y="175" width="60" height="25">
+            <foreignObject x="120" y="155" width="60" height="25">
               <Box
                 bg="white"
                 px={2}
@@ -77,7 +77,7 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
             </foreignObject>
 
             {/* Label C - direito */}
-            <foreignObject x="210" y="85" width="60" height="25">
+            <foreignObject x="195" y="85" width="60" height="25">
               <Box
                 bg="white"
                 px={2}

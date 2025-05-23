@@ -17,7 +17,9 @@ import {
   Divider,
   InputGroup,
   InputRightAddon,
+  Grid,
 } from '@chakra-ui/react';
+import { BsCalculator } from 'react-icons/bs';
 import Rectangle from './Rectangle';
 import Triangle from './Triangle';
 import '../../styles/shapes.css';
@@ -286,44 +288,45 @@ const CalculadoraCorteCana: React.FC = () => {
                   </Box>
 
                   <Box>
-                    <Heading size="sm" mb={4} color="gray.600">
+                    <Heading size="md" mb={4} color="brand.700">
                       Dimensões {selectedShape === 'rectangle' ? 'do Retângulo' : 'do Triângulo'}
                     </Heading>
-                    <VStack spacing={4}>
-                      <FormControl>
-                        <FormLabel>Lado A (metros):</FormLabel>
-                        <Input
-                          type="number"
-                          name="ladoA"
-                          value={formatInputValue(valores.ladoA)}
-                          onChange={handleInputChange}
-                          placeholder="0"
-                        />
-                      </FormControl>
+                    {selectedShape === 'rectangle' ? (
+                      // Layout para Retângulo
+                      <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                        <FormControl>
+                          <FormLabel>Lado A (metros):</FormLabel>
+                          <Input
+                            type="number"
+                            name="ladoA"
+                            value={formatInputValue(valores.ladoA)}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                          />
+                        </FormControl>
 
-                      <FormControl>
-                        <FormLabel>Lado B (metros):</FormLabel>
-                        <Input
-                          type="number"
-                          name="ladoB"
-                          value={formatInputValue(valores.ladoB)}
-                          onChange={handleInputChange}
-                          placeholder="0"
-                        />
-                      </FormControl>
+                        <FormControl>
+                          <FormLabel>Lado B (metros):</FormLabel>
+                          <Input
+                            type="number"
+                            name="ladoB"
+                            value={formatInputValue(valores.ladoB)}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                          />
+                        </FormControl>
 
-                      <FormControl>
-                        <FormLabel>Lado C (metros):</FormLabel>
-                        <Input
-                          type="number"
-                          name="ladoC"
-                          value={formatInputValue(valores.ladoC)}
-                          onChange={handleInputChange}
-                          placeholder="0"
-                        />
-                      </FormControl>
+                        <FormControl>
+                          <FormLabel>Lado C (metros):</FormLabel>
+                          <Input
+                            type="number"
+                            name="ladoC"
+                            value={formatInputValue(valores.ladoC)}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                          />
+                        </FormControl>
 
-                      {selectedShape === 'rectangle' && (
                         <FormControl>
                           <FormLabel>Lado D (metros):</FormLabel>
                           <Input
@@ -334,8 +337,46 @@ const CalculadoraCorteCana: React.FC = () => {
                             placeholder="0"
                           />
                         </FormControl>
-                      )}
-                    </VStack>
+                      </Grid>
+                    ) : (
+                      // Layout para Triângulo
+                      <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                        <VStack spacing={4} align="stretch">
+                          <FormControl>
+                            <FormLabel>Lado A (metros):</FormLabel>
+                            <Input
+                              type="number"
+                              name="ladoA"
+                              value={formatInputValue(valores.ladoA)}
+                              onChange={handleInputChange}
+                              placeholder="0"
+                            />
+                          </FormControl>
+
+                          <FormControl>
+                            <FormLabel>Lado C (metros):</FormLabel>
+                            <Input
+                              type="number"
+                              name="ladoC"
+                              value={formatInputValue(valores.ladoC)}
+                              onChange={handleInputChange}
+                              placeholder="0"
+                            />
+                          </FormControl>
+                        </VStack>
+
+                        <FormControl>
+                          <FormLabel>Lado B (metros):</FormLabel>
+                          <Input
+                            type="number"
+                            name="ladoB"
+                            value={formatInputValue(valores.ladoB)}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                          />
+                        </FormControl>
+                      </Grid>
+                    )}
                   </Box>
                 </VStack>
               </Box>
@@ -345,6 +386,7 @@ const CalculadoraCorteCana: React.FC = () => {
                 size="lg"
                 width="100%"
                 onClick={calcularPagamento}
+                leftIcon={<BsCalculator />}
               >
                 Calcular
               </Button>
