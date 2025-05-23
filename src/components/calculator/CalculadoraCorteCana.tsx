@@ -4,9 +4,6 @@ import {
   Container,
   Heading,
   VStack,
-  RadioGroup,
-  Radio,
-  Text,
   Card,
   CardBody,
   FormControl,
@@ -14,40 +11,90 @@ import {
   Input,
   Button,
   useToast,
+  Text,
+  RadioGroup,
+  Radio,
   Divider,
   InputGroup,
-  InputLeftAddon,
+  InputRightAddon,
 } from '@chakra-ui/react';
-import { useFormState } from '../../hooks/useFormState';
-import { useAreaCalculations } from '../../hooks/useAreaCalculations';
-import { useCurrencyInput } from '../../hooks/useCurrencyInput';
 import Rectangle from './Rectangle';
 import Triangle from './Triangle';
-
-type ShapeType = 'rectangle' | 'triangle';
+import '../../styles/shapes.css';
+import { usePercentageInput } from '../../hooks/usePercentageInput';
 
 const CalculadoraCorteCana: React.FC = () => {
-  const { dimensions, financialData, handleDimensionChange, handleFinancialChange, setFinancialData } = useFormState();
-  const { formatCurrency, handleCurrencyChange } = useCurrencyInput();
-  const { result, calculateAreas } = useAreaCalculations();
-  const [showResults, setShowResults] = useState(false);
-  const [selectedShape, setSelectedShape] = useState<ShapeType>('rectangle');
-  const [displayValue, setDisplayValue] = useState(formatCurrency(financialData.valorPorTonelada));
+  const [valores, setValores] = useState({
+    toneladas: 3,
+    valorPorTonelada: 0.20, // 20% - valor padrão conforme cálculo original
+    ladoA: 0,
+    ladoB: 0,
+    ladoC: 0,
+    ladoD: 0
+  });
+
+  const { displayValue, handlePercentageChange } = usePercentageInput(valores.valorPorTonelada);
+
+  const [resultado, setResultado] = useState({
+    cubagem: 0,
+    valorTotal: 0,
+    areaRetangulo: 0,
+    areaTriangulo: 0,
+    areaTotal: 0,
+    ladosUsados: {
+      ladoA: 0,
+      ladoB: 0,
+      ladoC: 0,
+      ladoD: 0
+    }
+  });
+
+  const [selectedShape, setSelectedShape] = useState<'rectangle' | 'triangle'>('rectangle');
+
   const toast = useToast();
 
-  const handleCurrencyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = handleCurrencyChange(e, (value) => {
-      setFinancialData(prev => ({ ...prev, valorPorTonelada: value }));
-    });
-    setDisplayValue(formattedValue);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'valorPorTonelada') {
+      handlePercentageChange(e, (newValue) => {
+        setValores(prev => ({
+          ...prev,
+          valorPorTonelada: newValue
+        }));
+      });
+      return;
+    }
+
+    // Trata inputs numéricos (lados e toneladas)
+    if (value === '') {
+      // Se o campo ficar vazio, define como 0
+      setValores(prev => ({
+        ...prev,
+        [name]: 0
+      }));
+    } else {
+      // Remove zeros à esquerda e converte para número
+      const numericValue = parseFloat(value.replace(/^0+/, ''));
+      setValores(prev => ({
+        ...prev,
+        [name]: numericValue
+      }));
+    }
   };
 
-  const handleCalculate = () => {
-    // Validar se todos os campos necessários estão preenchidos
-    if (!financialData.toneladas || !financialData.valorPorTonelada) {
+  // Função para formatar o valor exibido no input
+  const formatInputValue = (value: number) => {
+    // Retorna string vazia se for zero (para permitir digitação fácil)
+    return value === 0 ? '' : value.toString();
+  };
+
+  const calcularPagamento = () => {
+    // Validação dos campos
+    if (selectedShape === 'rectangle' && (!valores.ladoA || !valores.ladoB || !valores.ladoC || !valores.ladoD)) {
       toast({
         title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todos os campos financeiros.',
+        description: 'Por favor, preencha todos os campos necessários para o retângulo.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -55,11 +102,10 @@ const CalculadoraCorteCana: React.FC = () => {
       return;
     }
 
-    if (!dimensions.ladoA || !dimensions.ladoB || !dimensions.ladoC || 
-        (selectedShape === 'rectangle' && !dimensions.ladoD)) {
+    if (selectedShape === 'triangle' && (!valores.ladoA || !valores.ladoB || !valores.ladoC)) {
       toast({
         title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todas as dimensões necessárias.',
+        description: 'Por favor, preencha todos os campos necessários para o triângulo.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -67,8 +113,91 @@ const CalculadoraCorteCana: React.FC = () => {
       return;
     }
 
-    calculateAreas(dimensions, financialData.toneladas, financialData.valorPorTonelada, selectedShape);
-    setShowResults(true);
+    if (!valores.toneladas || valores.toneladas <= 0) {
+      toast({
+        title: 'Quantidade de toneladas inválida',
+        description: 'Por favor, insira uma quantidade de toneladas maior que zero.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!valores.valorPorTonelada || valores.valorPorTonelada <= 0) {
+      toast({
+        title: 'Valor por tonelada inválido',
+        description: 'Por favor, insira um valor por tonelada maior que zero.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    let cubagem = 0;
+    let valorTotal = 0;
+
+    // Guarda os valores dos lados antes de resetar
+    const ladosUsados = {
+      ladoA: valores.ladoA,
+      ladoB: valores.ladoB,
+      ladoC: valores.ladoC,
+      ladoD: valores.ladoD
+    };
+
+    if (selectedShape === 'rectangle') {
+      cubagem = ((valores.ladoA + valores.ladoB) / 2) * ((valores.ladoC + valores.ladoD) / 2);
+    } else {
+      cubagem = ((valores.ladoA + valores.ladoB) / 2) * (valores.ladoC / 2);
+    }
+
+    const valorPorToneladaTotal = valores.toneladas * valores.valorPorTonelada;
+    valorTotal = cubagem * valorPorToneladaTotal;
+
+    // Log detalhado para debug
+    console.log('Valores do cálculo:', {
+      shape: selectedShape,
+      lados: { A: valores.ladoA, B: valores.ladoB, C: valores.ladoC, D: valores.ladoD },
+      mediaAB: (valores.ladoA + valores.ladoB) / 2,
+      baseC: selectedShape === 'triangle' ? valores.ladoC / 2 : (valores.ladoC + valores.ladoD) / 2,
+      cubagem,
+      valorPorTonelada: valores.valorPorTonelada,
+      toneladas: valores.toneladas,
+      valorPorToneladaTotal,
+      valorTotal,
+      debug: {
+        calculo1: valores.toneladas * valores.valorPorTonelada,
+        calculo2: cubagem * (valores.toneladas * valores.valorPorTonelada)
+      }
+    });
+
+    setResultado({
+      cubagem,
+      valorTotal,
+      areaRetangulo: selectedShape === 'rectangle' ? cubagem : 0,
+      areaTriangulo: selectedShape === 'triangle' ? cubagem : 0,
+      areaTotal: cubagem,
+      ladosUsados
+    });
+
+    // Reset dos valores dos lados, mantendo toneladas e valorPorTonelada
+    setValores(prev => ({
+      ...prev,
+      ladoA: 0,
+      ladoB: 0,
+      ladoC: 0,
+      ladoD: 0
+    }));
+
+    // Feedback visual do cálculo realizado
+    toast({
+      title: 'Cálculo realizado',
+      description: 'Os valores foram calculados com sucesso.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -83,10 +212,7 @@ const CalculadoraCorteCana: React.FC = () => {
             <VStack spacing={6} align="stretch">
               <RadioGroup
                 value={selectedShape}
-                onChange={(value: ShapeType) => {
-                  setSelectedShape(value);
-                  setShowResults(false);
-                }}
+                onChange={(value: 'rectangle' | 'triangle') => setSelectedShape(value)}
               >
                 <Box display="flex" justifyContent="center" gap={8}>
                   <Radio value="rectangle" colorScheme="green">
@@ -100,9 +226,9 @@ const CalculadoraCorteCana: React.FC = () => {
 
               <Box>
                 {selectedShape === 'rectangle' ? (
-                  <Rectangle dimensions={dimensions} />
+                  <Rectangle dimensions={valores} />
                 ) : (
-                  <Triangle dimensions={dimensions} />
+                  <Triangle dimensions={valores} />
                 )}
               </Box>
 
@@ -123,26 +249,27 @@ const CalculadoraCorteCana: React.FC = () => {
                       <Input
                         type="number"
                         name="toneladas"
-                        value={financialData.toneladas || ''}
-                        onChange={handleFinancialChange}
-                        placeholder="Digite a quantidade de toneladas"
+                        value={formatInputValue(valores.toneladas)}
+                        onChange={handleInputChange}
+                        placeholder="0"
                       />
                     </FormControl>
 
                     <FormControl mt={4}>
-                      <FormLabel>Valor por Tonelada (R$):</FormLabel>
+                      <FormLabel>Valor por Tonelada (%):</FormLabel>
                       <InputGroup>
-                        <InputLeftAddon>R$</InputLeftAddon>
                         <Input
                           type="text"
                           name="valorPorTonelada"
                           value={displayValue}
-                          onChange={handleCurrencyInputChange}
-                          onFocus={(e) => e.target.select()}
-                          placeholder="0,00"
-                          inputMode="numeric"
+                          onChange={handleInputChange}
+                          placeholder="20"
                         />
+                        <InputRightAddon>%</InputRightAddon>
                       </InputGroup>
+                      <Text fontSize="sm" color="gray.600" mt={1}>
+                        Ex: Digite 20 para 20%
+                      </Text>
                     </FormControl>
                   </Box>
 
@@ -156,9 +283,9 @@ const CalculadoraCorteCana: React.FC = () => {
                         <Input
                           type="number"
                           name="ladoA"
-                          value={dimensions.ladoA || ''}
-                          onChange={handleDimensionChange}
-                          placeholder="Digite o comprimento do lado A"
+                          value={formatInputValue(valores.ladoA)}
+                          onChange={handleInputChange}
+                          placeholder="0"
                         />
                       </FormControl>
 
@@ -167,9 +294,9 @@ const CalculadoraCorteCana: React.FC = () => {
                         <Input
                           type="number"
                           name="ladoB"
-                          value={dimensions.ladoB || ''}
-                          onChange={handleDimensionChange}
-                          placeholder="Digite o comprimento do lado B"
+                          value={formatInputValue(valores.ladoB)}
+                          onChange={handleInputChange}
+                          placeholder="0"
                         />
                       </FormControl>
 
@@ -178,9 +305,9 @@ const CalculadoraCorteCana: React.FC = () => {
                         <Input
                           type="number"
                           name="ladoC"
-                          value={dimensions.ladoC || ''}
-                          onChange={handleDimensionChange}
-                          placeholder="Digite o comprimento do lado C"
+                          value={formatInputValue(valores.ladoC)}
+                          onChange={handleInputChange}
+                          placeholder="0"
                         />
                       </FormControl>
 
@@ -190,9 +317,9 @@ const CalculadoraCorteCana: React.FC = () => {
                           <Input
                             type="number"
                             name="ladoD"
-                            value={dimensions.ladoD || ''}
-                            onChange={handleDimensionChange}
-                            placeholder="Digite o comprimento do lado D"
+                            value={formatInputValue(valores.ladoD)}
+                            onChange={handleInputChange}
+                            placeholder="0"
                           />
                         </FormControl>
                       )}
@@ -205,31 +332,42 @@ const CalculadoraCorteCana: React.FC = () => {
                 colorScheme="green"
                 size="lg"
                 width="100%"
-                onClick={handleCalculate}
+                onClick={calcularPagamento}
               >
                 Calcular
               </Button>
 
-              {showResults && (
+              {resultado.valorTotal > 0 && (
                 <Card bg="brand.50" mt={4}>
                   <CardBody>
                     <VStack spacing={3} align="stretch">
                       <Heading size="md" color="brand.700">
                         Resultados:
                       </Heading>
+                      <Box borderWidth="1px" borderRadius="md" p={3} bg="white">
+                        <Text fontWeight="500" mb={2}>Valores utilizados:</Text>
+                        <Text>Lado A: {resultado.ladosUsados.ladoA} metros</Text>
+                        <Text>Lado B: {resultado.ladosUsados.ladoB} metros</Text>
+                        <Text>Lado C: {resultado.ladosUsados.ladoC} metros</Text>
+                        {selectedShape === 'rectangle' && (
+                          <Text>Lado D: {resultado.ladosUsados.ladoD} metros</Text>
+                        )}
+                      </Box>
                       {selectedShape === 'rectangle' ? (
-                        <Text>
-                          Área do Retângulo: {result.areaRetangulo.toFixed(2)} m²
-                        </Text>
+                        <>
+                          <Text>Valor da Cubação: {resultado.cubagem.toFixed(2)}</Text>
+                          <Text fontWeight="bold" color="green.700">
+                            Valor Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resultado.valorTotal)}
+                          </Text>
+                        </>
                       ) : (
-                        <Text>
-                          Área do Triângulo: {result.areaTriangulo.toFixed(2)} m²
-                        </Text>
+                        <>
+                          <Text>Área do Triângulo: {resultado.cubagem.toFixed(2)} m²</Text>
+                          <Text fontWeight="bold" color="green.700">
+                            Valor Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resultado.valorTotal)}
+                          </Text>
+                        </>
                       )}
-                      <Text>Área Total: {result.areaTotal.toFixed(2)} m²</Text>
-                      <Text fontWeight="bold" color="brand.700">
-                        Valor Total: R$ {result.valorTotal.toFixed(2)}
-                      </Text>
                     </VStack>
                   </CardBody>
                 </Card>

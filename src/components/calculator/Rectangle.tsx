@@ -1,9 +1,13 @@
 import React from 'react';
 import { Box, Text } from '@chakra-ui/react';
-import { Dimensions } from '../../types/calculator';
 
 interface RectangleProps {
-  dimensions: Dimensions;
+  dimensions: {
+    ladoA: number;
+    ladoB: number;
+    ladoC: number;
+    ladoD: number;
+  };
 }
 
 const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
@@ -44,11 +48,11 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 borderRadius="md"
                 boxShadow="md"
                 border="1px"
-                borderColor="brand.200"
+                borderColor="green.200"
                 textAlign="center"
                 fontSize="sm"
                 fontWeight="500"
-                color="brand.700"
+                color="green.700"
               >
                 <Text>A={ladoA}m</Text>
               </Box>
@@ -63,11 +67,11 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 borderRadius="md"
                 boxShadow="md"
                 border="1px"
-                borderColor="brand.200"
+                borderColor="green.200"
                 textAlign="center"
                 fontSize="sm"
                 fontWeight="500"
-                color="brand.700"
+                color="green.700"
               >
                 <Text>B={ladoB}m</Text>
               </Box>
@@ -82,11 +86,11 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 borderRadius="md"
                 boxShadow="md"
                 border="1px"
-                borderColor="brand.200"
+                borderColor="green.200"
                 textAlign="center"
                 fontSize="sm"
                 fontWeight="500"
-                color="brand.700"
+                color="green.700"
               >
                 <Text>C={ladoC}m</Text>
               </Box>
@@ -101,11 +105,11 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 borderRadius="md"
                 boxShadow="md"
                 border="1px"
-                borderColor="brand.200"
+                borderColor="green.200"
                 textAlign="center"
                 fontSize="sm"
                 fontWeight="500"
-                color="brand.700"
+                color="green.700"
               >
                 <Text>D={ladoD}m</Text>
               </Box>

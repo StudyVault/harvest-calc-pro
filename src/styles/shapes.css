@@ -1,0 +1,28 @@
+.shape-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.shape-visualization {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 3/2;
+}
+
+/* Estilos para triângulo inválido */
+.triangle-path.invalid {
+  stroke: #f44336;
+  stroke-dasharray: 5,5;
+}
+
+.validation-message {
+  color: #f44336;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: rgba(244, 67, 54, 0.1);
+  padding: 0.5rem;
+  border-radius: 4px;
+} 
