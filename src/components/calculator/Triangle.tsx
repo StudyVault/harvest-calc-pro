@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Text } from '@chakra-ui/react';
 import { Dimensions } from '../../types/calculator';
 import { validateTriangleInequality } from '../../utils/validation';
+import '../../styles/shapes.css';
 
 interface TriangleProps {
   dimensions: Dimensions;
@@ -33,13 +34,14 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
             fill="#e8f5e9"
             stroke={isValidTriangle ? "#2e7d32" : "#d32f2f"}
             strokeWidth="2"
+            strokeDasharray={!isValidTriangle ? "5,5" : "none"}
             className={isValidTriangle ? "triangle-path" : "triangle-path invalid"}
           />
           
           {/* Labels */}
           <g>
             {/* Label A - esquerdo */}
-            <foreignObject x="45" y="85" width="60" height="25">
+            <foreignObject x="35" y="85" width="60" height="25">
               <Box
                 bg="white"
                 px={2}
@@ -77,7 +79,7 @@ const Triangle: React.FC<TriangleProps> = ({ dimensions }) => {
             </foreignObject>
 
             {/* Label C - direito */}
-            <foreignObject x="195" y="85" width="60" height="25">
+            <foreignObject x="205" y="85" width="60" height="25">
               <Box
                 bg="white"
                 px={2}
