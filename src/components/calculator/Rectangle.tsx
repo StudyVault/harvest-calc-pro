@@ -56,7 +56,7 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 border="1px"
                 borderColor="green.200"
                 textAlign="center"
-                fontSize="sm"
+                fontSize="11px"
                 fontWeight="500"
                 color="green.700"
               >
@@ -75,7 +75,7 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 border="1px"
                 borderColor="green.200"
                 textAlign="center"
-                fontSize="sm"
+                fontSize="11px"
                 fontWeight="500"
                 color="green.700"
               >
@@ -94,7 +94,7 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 border="1px"
                 borderColor="green.200"
                 textAlign="center"
-                fontSize="sm"
+                fontSize="11px"
                 fontWeight="500"
                 color="green.700"
               >
@@ -113,7 +113,7 @@ const Rectangle: React.FC<RectangleProps> = ({ dimensions }) => {
                 border="1px"
                 borderColor="green.200"
                 textAlign="center"
-                fontSize="sm"
+                fontSize="11px"
                 fontWeight="500"
                 color="green.700"
               >
