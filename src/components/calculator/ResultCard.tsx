@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardBody,
@@ -23,6 +23,22 @@ interface ResultCardProps {
 }
 
 const ResultCard: React.FC<ResultCardProps> = ({ resultado, selectedShape }) => {
+  const [timeLeft, setTimeLeft] = useState(60);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <Card bg="brand.50" mt={4}>
       <CardBody>
@@ -30,7 +46,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ resultado, selectedShape }) => 
           <Heading size="md" color="brand.700" display="flex" justifyContent="space-between" alignItems="center">
             <Text>Resultados:</Text>
             <Text fontSize="sm" color="gray.500">
-              (será ocultado em 60 segundos)
+              {timeLeft > 0 ? `(será ocultado em ${timeLeft} segundos)` : '(ocultando...)'}
             </Text>
           </Heading>
           <Box borderWidth="1px" borderRadius="md" p={3} bg="white">
