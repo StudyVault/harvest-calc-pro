@@ -12,40 +12,53 @@ export const validateTriangleInequality = (
   );
 };
 
+const validatePositiveSides = (sides: number[]): string[] => {
+  return sides
+    .map((side, index) => {
+      const labels = ['A', 'B', 'C', 'D'];
+      return side <= 0 ? `O lado ${labels[index]} deve ser maior que zero` : '';
+    })
+    .filter(Boolean);
+};
+
+const validateRectangle = (dimensions: Dimensions): string[] => {
+  const { ladoA, ladoB, ladoC, ladoD } = dimensions;
+  const errors = validatePositiveSides([ladoA, ladoB, ladoC, ladoD]);
+
+  const allSidesPositive = [ladoA, ladoB, ladoC, ladoD].every(side => side > 0);
+  if (allSidesPositive) {
+    const oppositeSidesEqual = 
+      Math.abs(ladoA - ladoC) <= 0.001 && 
+      Math.abs(ladoB - ladoD) <= 0.001;
+    
+    if (!oppositeSidesEqual) {
+      errors.push('Os lados opostos de um retângulo devem ser iguais');
+    }
+  }
+
+  return errors;
+};
+
+const validateTriangle = (dimensions: Dimensions): string[] => {
+  const { ladoA, ladoB, ladoC } = dimensions;
+  const errors = validatePositiveSides([ladoA, ladoB, ladoC]);
+
+  const allSidesPositive = [ladoA, ladoB, ladoC].every(side => side > 0);
+  if (allSidesPositive && !validateTriangleInequality(ladoA, ladoB, ladoC)) {
+    errors.push('As dimensões não formam um triângulo válido');
+  }
+
+  return errors;
+};
+
 export const validateDimensions = (dimensions: Dimensions, selectedShape: 'rectangle' | 'triangle'): {
   valid: boolean;
   errors: string[];
 } => {
-  const { ladoA, ladoB, ladoC, ladoD } = dimensions;
-  const errors: string[] = [];
-  
-  // Validações comuns para ambas as formas
-  if (ladoA <= 0) errors.push('O lado A deve ser maior que zero');
-  if (ladoB <= 0) errors.push('O lado B deve ser maior que zero');
-  
-  if (selectedShape === 'rectangle') {
-    // Validações específicas para retângulo
-    if (ladoC <= 0) errors.push('O lado C deve ser maior que zero');
-    if (ladoD <= 0) errors.push('O lado D deve ser maior que zero');
-    
-    // Verificar se é um retângulo válido (lados opostos iguais)
-    if (ladoA > 0 && ladoB > 0 && ladoC > 0 && ladoD > 0) {
-      if (Math.abs(ladoA - ladoC) > 0.001 || Math.abs(ladoB - ladoD) > 0.001) {
-        errors.push('Os lados opostos de um retângulo devem ser iguais');
-      }
-    }
-  } else {
-    // Validações específicas para triângulo
-    if (ladoC <= 0) errors.push('O lado C deve ser maior que zero');
-    
-    // Verificar desigualdade triangular
-    if (ladoA > 0 && ladoB > 0 && ladoC > 0) {
-      if (!validateTriangleInequality(ladoA, ladoB, ladoC)) {
-        errors.push('As dimensões não formam um triângulo válido');
-      }
-    }
-  }
-  
+  const errors = selectedShape === 'rectangle' 
+    ? validateRectangle(dimensions)
+    : validateTriangle(dimensions);
+
   return {
     valid: errors.length === 0,
     errors
