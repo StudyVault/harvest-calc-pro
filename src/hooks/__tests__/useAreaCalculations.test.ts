@@ -2,84 +2,99 @@ import { renderHook, act } from '@testing-library/react';
 import { useAreaCalculations } from '../useAreaCalculations';
 
 describe('useAreaCalculations', () => {
-  describe('Rectangle calculations', () => {
-    it('should calculate rectangle area correctly', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 5, ladoB: 3, ladoC: 5, ladoD: 3 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 10, 20, 'rectangle');
-      });
-      
-      expect(result.current.result.areaRetangulo).toBe(15); // 5 * 3
-      expect(result.current.result.areaTotal).toBe(15);
-      expect(result.current.result.valorTotal).toBe(200); // 10 * 20
-    });
+  const mockDimensions = {
+    ladoA: 10,
+    ladoB: 5,
+    ladoC: 8,
+    ladoD: 0
+  };
 
-    it('should handle zero dimensions for rectangle', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 0, ladoB: 0, ladoC: 0, ladoD: 0 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 10, 20, 'rectangle');
-      });
-      
-      expect(result.current.result.areaRetangulo).toBe(0);
-      expect(result.current.result.areaTotal).toBe(0);
-      expect(result.current.result.valorTotal).toBe(200);
+  it('should initialize with zero values', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    
+    expect(result.current.result).toEqual({
+      areaRetangulo: 0,
+      areaTriangulo: 0,
+      areaTotal: 0,
+      valorTotal: 0
     });
   });
 
-  describe('Triangle calculations', () => {
-    it('should calculate triangle area correctly', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 3, ladoB: 4, ladoC: 5, ladoD: 0 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 10, 20, 'triangle');
-      });
-      
-      // Área do triângulo 3-4-5 é 6 (usando fórmula de Heron)
-      expect(result.current.result.areaTriangulo).toBeCloseTo(6, 2);
-      expect(result.current.result.areaTotal).toBeCloseTo(6, 2);
-      expect(result.current.result.valorTotal).toBe(200);
+  it('should calculate rectangle area correctly', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    
+    act(() => {
+      result.current.calculateAreas(mockDimensions, 3, 20, 'rectangle');
     });
 
-    it('should handle invalid triangle dimensions', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 1, ladoB: 1, ladoC: 3, ladoD: 0 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 10, 20, 'triangle');
-      });
-      
-      expect(result.current.result.areaTriangulo).toBe(0);
-      expect(result.current.result.areaTotal).toBe(0);
-      expect(result.current.result.valorTotal).toBe(200);
+    expect(result.current.result).toEqual({
+      areaRetangulo: 50, // 10 * 5
+      areaTriangulo: 0,
+      areaTotal: 50,
+      valorTotal: 60 // 3 * 20
     });
   });
 
-  describe('Financial calculations', () => {
-    it('should calculate total value correctly', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 5, ladoB: 3, ladoC: 5, ladoD: 3 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 10, 20, 'rectangle');
-      });
-      
-      expect(result.current.result.valorTotal).toBe(200); // 10 toneladas * R$20,00
+  it('should calculate triangle area correctly', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    const triangleDimensions = {
+      ladoA: 3,
+      ladoB: 4,
+      ladoC: 5,
+      ladoD: 0
+    };
+    
+    act(() => {
+      result.current.calculateAreas(triangleDimensions, 3, 20, 'triangle');
     });
 
-    it('should handle zero values', () => {
-      const { result } = renderHook(() => useAreaCalculations());
-      const dimensions = { ladoA: 5, ladoB: 3, ladoC: 5, ladoD: 3 };
-      
-      act(() => {
-        result.current.calculateAreas(dimensions, 0, 0, 'rectangle');
-      });
-      
-      expect(result.current.result.valorTotal).toBe(0);
+    expect(result.current.result).toEqual({
+      areaRetangulo: 0,
+      areaTriangulo: 6, // área do triângulo 3-4-5
+      areaTotal: 6,
+      valorTotal: 60 // 3 * 20
     });
+  });
+
+  it('should handle invalid triangle dimensions', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    const invalidTriangleDimensions = {
+      ladoA: 1,
+      ladoB: 1,
+      ladoC: 10, // Triângulo impossível
+      ladoD: 0
+    };
+    
+    act(() => {
+      result.current.calculateAreas(invalidTriangleDimensions, 3, 20, 'triangle');
+    });
+
+    expect(result.current.result).toEqual({
+      areaRetangulo: 0,
+      areaTriangulo: 0,
+      areaTotal: 0,
+      valorTotal: 60
+    });
+  });
+
+  it('should calculate financial values correctly', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    
+    act(() => {
+      result.current.calculateAreas(mockDimensions, 5, 30, 'rectangle');
+    });
+
+    expect(result.current.result.valorTotal).toBe(150); // 5 * 30
+  });
+
+  it('should return calculation results', () => {
+    const { result } = renderHook(() => useAreaCalculations());
+    
+    let returnedResult;
+    act(() => {
+      returnedResult = result.current.calculateAreas(mockDimensions, 3, 20, 'rectangle');
+    });
+
+    expect(returnedResult).toEqual(result.current.result);
   });
 }); 
