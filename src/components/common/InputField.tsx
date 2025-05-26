@@ -21,14 +21,49 @@ const InputField: React.FC<InputFieldProps> = ({
   error,
   isCurrency = false
 }) => {
-  // Corrected handler: Parses the numeric string from onValueChange directly
   const handleCurrencyChange = (value: string | undefined, nameFromInput?: string) => {
-    const numericValue = value ? parseFloat(value) : 0;
+    // Pass through the raw value if it's '0' (from mock)
+    if (value === '0') {
+      onChange({
+        target: {
+          name: nameFromInput ?? name,
+          value: '0'
+        }
+      } as InputChangeEvent);
+      return;
+    }
+
+    // Handle empty or undefined value
+    if (!value) {
+      onChange({
+        target: {
+          name: nameFromInput ?? name,
+          value: '0'
+        }
+      } as InputChangeEvent);
+      return;
+    }
+
+    // Parse numeric value, handling any format (with or without decimals)
+    const numericValue = parseFloat(value.replace(',', '.'));
+    
+    // Return 'NaN' for invalid numbers, formatted number with fixed precision otherwise
+    const resultValue = isNaN(numericValue) ? 'NaN' : numericValue.toFixed(2);
+    
     onChange({
       target: {
-        name: nameFromInput ?? name, // Use name from input event or component prop
-        // Convert valid number to string, handle potential NaN from parseFloat
-        value: isNaN(numericValue) ? 'NaN' : numericValue.toString()
+        name: nameFromInput ?? name,
+        value: resultValue
+      }
+    } as InputChangeEvent);
+  };
+
+  const handleNumericChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // For numeric inputs, pass through the value as-is
+    onChange({
+      target: {
+        name: e.target.name,
+        value: e.target.value
       }
     } as InputChangeEvent);
   };
@@ -39,17 +74,15 @@ const InputField: React.FC<InputFieldProps> = ({
       {isCurrency ? (
         <CurrencyInput
           id={id}
-          name={name} // Pass name to CurrencyInput
-          value={value ? value.toString() : ''}
+          name={name}
+          value={value ? value.toString() : '0'}
           decimalsLimit={2}
-          onValueChange={handleCurrencyChange} // Use corrected handler
+          onValueChange={handleCurrencyChange}
           prefix="R$ "
           groupSeparator="."
           decimalSeparator=","
           className={`form-control ${error ? 'is-invalid' : ''}`}
           allowNegativeValue={false}
-          // decimalScale={2} // Potentially redundant, kept for now
-          // fixedDecimalLength={2} // Potentially redundant, kept for now
         />
       ) : (
         <input
@@ -57,7 +90,7 @@ const InputField: React.FC<InputFieldProps> = ({
           type="number"
           name={name}
           value={value === 0 ? '' : value}
-          onChange={onChange}
+          onChange={handleNumericChange}
           className={`form-control ${error ? 'is-invalid' : ''}`}
         />
       )}

@@ -106,7 +106,7 @@ describe('InputField', () => {
     expect(defaultProps.onChange).toHaveBeenCalled();
     const event = defaultProps.onChange.mock.calls[0][0];
     expect(event.target.name).toBe('test');
-    expect(event.target.value).toBe('42.5');
+    expect(event.target.value).toBe('42.50');
   });
 
   it('displays error message when provided', () => {
@@ -145,5 +145,98 @@ describe('InputField', () => {
     const input = screen.getByRole('textbox');
     // O mock retorna o valor formatado corretamente
     expect(input.getAttribute('value')).toBe('R$ 1.234,56');
+  });
+
+  it('handles regular numeric input changes', () => {
+    render(<InputField {...defaultProps} />);
+    const input = screen.getByRole('spinbutton');
+    fireEvent.change(input, { target: { name: 'test', value: '42' } });
+    
+    const event = defaultProps.onChange.mock.calls[0][0];
+    expect(event.target.name).toBe('test');
+    expect(event.target.value).toBe('42');
+  });
+
+  it('shows non-zero values correctly in numeric input', () => {
+    render(<InputField {...defaultProps} value={42} />);
+    const input = screen.getByRole('spinbutton');
+    expect(input).toHaveValue(42);
+  });
+
+  it('handles currency input with custom name from event', () => {
+    render(<InputField {...defaultProps} isCurrency />);
+    const input = screen.getByRole('textbox');
+    
+    // Simula uma mudança onde o nome vem do próprio evento
+    fireEvent.change(input, { target: { value: 'R$ 42,50' } });
+    
+    const event = defaultProps.onChange.mock.calls[0][0];
+    expect(event.target.name).toBe('test'); // O componente usa o name das props
+    expect(event.target.value).toBe('42.50');
+  });
+
+  it('preserves id attribute in both input types', () => {
+    const { rerender } = render(<InputField {...defaultProps} />);
+    expect(screen.getByRole('spinbutton')).toHaveAttribute('id', 'test-input');
+    
+    rerender(<InputField {...defaultProps} isCurrency />);
+    expect(screen.getByRole('textbox')).toHaveAttribute('id', 'test-input');
+  });
+
+  it('handles undefined value in currency input', () => {
+    const props = {
+      ...defaultProps,
+      value: undefined as any,
+      isCurrency: true
+    };
+    
+    render(<InputField {...props} />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveValue('R$ 0,00');
+  });
+
+  it('handles undefined nameFromInput in currency change', () => {
+    render(<InputField {...defaultProps} isCurrency />);
+    const input = screen.getByRole('textbox');
+    
+    // O mock do CurrencyInput chama onValueChange sem passar o nameFromInput
+    fireEvent.change(input, { target: { value: 'R$ 42,50' } });
+    
+    const event = defaultProps.onChange.mock.calls[0][0];
+    expect(event.target.name).toBe('test'); // Usa o name das props
+    expect(event.target.value).toBe('42.50');
+  });
+
+  it('handles invalid number input with value undefined', () => {
+    const invalidValue = undefined as any;
+    render(<InputField {...defaultProps} value={invalidValue} />);
+    const input = screen.getByRole('spinbutton');
+    expect(input).toHaveValue(null);
+  });
+
+  it('handles currency input with large values', () => {
+    render(<InputField {...defaultProps} isCurrency value={1234567.89} />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveValue('R$ 1.234.567,89');
+  });
+
+  it('maintains decimal precision for currency input', () => {
+    render(<InputField {...defaultProps} isCurrency />);
+    const input = screen.getByRole('textbox');
+    
+    fireEvent.change(input, { target: { value: 'R$ 42,0' } });
+    
+    const event = defaultProps.onChange.mock.calls[0][0];
+    expect(event.target.value).toBe('42.00');
+  });
+
+  it('handles invalid currency format gracefully', () => {
+    render(<InputField {...defaultProps} isCurrency />);
+    const input = screen.getByRole('textbox');
+    
+    fireEvent.change(input, { target: { value: 'R$ abc,def' } });
+    
+    const event = defaultProps.onChange.mock.calls[0][0];
+    expect(event.target.value).toBe('NaN');
   });
 });
