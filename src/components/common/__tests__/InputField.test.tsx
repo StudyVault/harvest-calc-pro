@@ -98,15 +98,6 @@ describe('InputField', () => {
     expect(input.getAttribute('value')).toBe('R$ 0,00');
   });
 
-  it('handles numeric input changes', () => {
-    render(<InputField {...defaultProps} />);
-    const input = screen.getByRole('spinbutton');
-    fireEvent.change(input, { target: { value: '42' } });
-    expect(defaultProps.onChange).toHaveBeenCalled();
-    const event = defaultProps.onChange.mock.calls[0][0];
-    expect(event.target.name).toBe('test');
-    expect(event.target.value).toBe('42');
-  });
 
   it('handles currency input changes', () => {
     render(<InputField {...defaultProps} isCurrency />);

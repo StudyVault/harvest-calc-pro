@@ -12,22 +12,23 @@ interface InputFieldProps {
   isCurrency?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ 
-  id, 
-  name, 
-  label, 
-  value, 
-  onChange, 
+const InputField: React.FC<InputFieldProps> = ({
+  id,
+  name,
+  label,
+  value,
+  onChange,
   error,
   isCurrency = false
 }) => {
-  const handleCurrencyChange = (value: string | undefined) => {
-    // Convert the currency string to number and trigger the onChange
-    const numericValue = value ? parseFloat(value.replace(/\./g, '').replace(',', '.')) : 0;
+  // Corrected handler: Parses the numeric string from onValueChange directly
+  const handleCurrencyChange = (value: string | undefined, nameFromInput?: string) => {
+    const numericValue = value ? parseFloat(value) : 0;
     onChange({
       target: {
-        name,
-        value: numericValue.toString()
+        name: nameFromInput || name, // Use name from input event or component prop
+        // Convert valid number to string, handle potential NaN from parseFloat
+        value: isNaN(numericValue) ? 'NaN' : numericValue.toString()
       }
     } as InputChangeEvent);
   };
@@ -38,25 +39,25 @@ const InputField: React.FC<InputFieldProps> = ({
       {isCurrency ? (
         <CurrencyInput
           id={id}
-          name={name}
+          name={name} // Pass name to CurrencyInput
           value={value ? value.toString() : ''}
           decimalsLimit={2}
-          onValueChange={handleCurrencyChange}
+          onValueChange={handleCurrencyChange} // Use corrected handler
           prefix="R$ "
           groupSeparator="."
           decimalSeparator=","
           className={`form-control ${error ? 'is-invalid' : ''}`}
           allowNegativeValue={false}
-          decimalScale={2}
-          fixedDecimalLength={2}
+          // decimalScale={2} // Potentially redundant, kept for now
+          // fixedDecimalLength={2} // Potentially redundant, kept for now
         />
       ) : (
         <input
           id={id}
           type="number"
           name={name}
-          value={value || ''}
-          onChange={onChange}
+          value={value || ''} // Keep existing logic for numeric input
+          onChange={onChange} // Pass original onChange for numeric input
           className={`form-control ${error ? 'is-invalid' : ''}`}
         />
       )}
@@ -66,3 +67,4 @@ const InputField: React.FC<InputFieldProps> = ({
 };
 
 export default InputField;
+
