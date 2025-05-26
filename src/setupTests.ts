@@ -9,11 +9,21 @@ import { configure } from '@testing-library/react';
 configure({ testIdAttribute: 'data-testid' });
 
 // Mock para ResizeObserver que não está disponível no JSDOM
-// Implementação vazia intencional para testes, já que o JSDOM não suporta ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  observe() {} // Método intencionalmente vazio para testes
-  unobserve() {} // Método intencionalmente vazio para testes
-  disconnect() {} // Método intencionalmente vazio para testes
+  observe = jest.fn().mockImplementation((_element: Element) => {
+    // Simula a observação do elemento
+    return undefined;
+  });
+
+  unobserve = jest.fn().mockImplementation((_element: Element) => {
+    // Simula a remoção da observação do elemento
+    return undefined;
+  });
+
+  disconnect = jest.fn().mockImplementation(() => {
+    // Simula a desconexão do observer
+    return undefined;
+  });
 };
 
 // Mock para window.matchMedia
