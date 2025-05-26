@@ -9,10 +9,11 @@ import { configure } from '@testing-library/react';
 configure({ testIdAttribute: 'data-testid' });
 
 // Mock para ResizeObserver que não está disponível no JSDOM
+// Implementação vazia intencional para testes, já que o JSDOM não suporta ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() {} // Método intencionalmente vazio para testes
+  unobserve() {} // Método intencionalmente vazio para testes
+  disconnect() {} // Método intencionalmente vazio para testes
 };
 
 // Mock para window.matchMedia

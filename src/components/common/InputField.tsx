@@ -26,7 +26,7 @@ const InputField: React.FC<InputFieldProps> = ({
     const numericValue = value ? parseFloat(value) : 0;
     onChange({
       target: {
-        name: nameFromInput || name, // Use name from input event or component prop
+        name: nameFromInput ?? name, // Use name from input event or component prop
         // Convert valid number to string, handle potential NaN from parseFloat
         value: isNaN(numericValue) ? 'NaN' : numericValue.toString()
       }
@@ -56,8 +56,8 @@ const InputField: React.FC<InputFieldProps> = ({
           id={id}
           type="number"
           name={name}
-          value={value || ''} // Keep existing logic for numeric input
-          onChange={onChange} // Pass original onChange for numeric input
+          value={value === 0 ? '' : value}
+          onChange={onChange}
           className={`form-control ${error ? 'is-invalid' : ''}`}
         />
       )}

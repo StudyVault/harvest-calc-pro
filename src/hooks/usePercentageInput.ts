@@ -8,7 +8,7 @@ export const usePercentageInput = (initialValue: number) => {
     e: React.ChangeEvent<HTMLInputElement>,
     onChange: (value: number) => void
   ) => {
-    const input = e.target.value.replace(/[^0-9]/g, '');
+    const input = e.target.value.replace(/\D/g, '');
     
     if (input === '') {
       setDisplayValue('');
