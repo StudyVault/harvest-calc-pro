@@ -1,4 +1,4 @@
-name: Build
+name: Build and Deploy
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: Build and Analyze
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,18 +26,55 @@ jobs:
       - name: Run tests with coverage
         run: npm test -- --coverage
 
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+
+  sonar:
+    name: SonarCloud Analysis
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Build
-        if: github.ref == 'refs/heads/main'
-        run: npm run build
+  deploy:
+    name: Deploy
+    needs: [build, sonar]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
