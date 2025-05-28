@@ -49,6 +49,19 @@ const CalculadoraCorteCana: React.FC = () => {
 
   const toast = useToast();
 
+  // Função para lidar com a mudança de forma
+  const handleShapeChange = (value: 'rectangle' | 'triangle') => {
+    setSelectedShape(value);
+    
+    // Se mudando de retângulo para triângulo, zerar o ladoD
+    if (value === 'triangle') {
+      setValores(prev => ({
+        ...prev,
+        ladoD: 0
+      }));
+    }
+  };
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (showResult && resultado.valorTotal > 0) {
@@ -206,7 +219,7 @@ const CalculadoraCorteCana: React.FC = () => {
         <Box>
           <RadioGroup
             value={selectedShape}
-            onChange={(value: 'rectangle' | 'triangle') => setSelectedShape(value)}
+            onChange={(value: 'rectangle' | 'triangle') => handleShapeChange(value)}
           >
             <Box display="flex" justifyContent="center" gap={8}>
               <Radio value="rectangle" colorScheme="green">
