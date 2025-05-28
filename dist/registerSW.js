@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/harvest-calc-pro/sw.js', { scope: '/harvest-calc-pro/' })})}
