@@ -82,6 +82,39 @@ body {
   font-size: var(--font-size-sm);
 }
 
+.version-info {
+  margin-top: var(--spacing-sm);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Roboto Mono', monospace;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: var(--spacing-sm);
+}
+
+/* Deploy Info Badge */
+.deploy-info {
+  margin-top: var(--spacing-sm);
+}
+
+.deploy-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-family: 'Roboto Mono', monospace;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.deploy-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
 /* Utilitários */
 .text-center {
   text-align: center;
@@ -166,6 +199,11 @@ body {
   
   .logo {
     height: 32px;
+  }
+  
+  .deploy-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
   }
 }
 
