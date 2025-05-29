@@ -12,7 +12,7 @@ function App() {
     url: 'https://studyvault.github.io/harvest-calc-pro/',
     build: 'DEPLOY-TEST-' + Date.now(),
     environment: 'production',
-    lastUpdate: '28/05/2025 - 21:25' // WORKFLOW CORRIGIDO - Deploy com logs detalhados do GitHub Actions
+    lastUpdate: '28/05/2025 - 21:35' // TESTE CRÍTICO - Mudança no GitHub Pages API
   };
 
   console.log('🚀 APP ATUALIZADO!');
@@ -43,11 +43,11 @@ function App() {
           <div className="logo-container">
             <img src="./logo.svg" alt="Logo" className="logo" />
           </div>
-          <h1 className="main-title">Harvest Calc Pro</h1>
-          <p className="subtitle">Calculadora Profissional para Corte de Cana</p>
+          <h1 className="main-title">🔄 Harvest Calc Pro - DEPLOY EM TESTE 🔄</h1>
+          <p className="subtitle">Calculadora Profissional para Corte de Cana - VERSÃO TESTE</p>
           <div className="deploy-info">
             <span className="deploy-badge">
-              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate} | LOGS DETALHADOS ✅
+              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate} | USANDO GITHUB PAGES API ✅
             </span>
           </div>
         </div>
