@@ -12,7 +12,7 @@ function App() {
     url: 'https://studyvault.github.io/harvest-calc-pro/',
     build: 'DEPLOY-TEST-' + Date.now(),
     environment: 'production',
-    lastUpdate: '28/05/2025 - 21:10' // Deploy com sistema de verificação completo
+    lastUpdate: '28/05/2025 - 21:25' // WORKFLOW CORRIGIDO - Deploy com logs detalhados do GitHub Actions
   };
 
   console.log('🚀 APP ATUALIZADO!');
@@ -47,7 +47,7 @@ function App() {
           <p className="subtitle">Calculadora Profissional para Corte de Cana</p>
           <div className="deploy-info">
             <span className="deploy-badge">
-              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate}
+              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate} | LOGS DETALHADOS ✅
             </span>
           </div>
         </div>
