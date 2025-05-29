@@ -70,7 +70,7 @@ jobs:
       pages: write
       id-token: write
     name: Deploy to GitHub Pages
-    needs: [build] # Removido dependência do sonar para não bloquear deploy
+    needs: [build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment:
@@ -88,37 +88,6 @@ jobs:
           name: build
           path: dist
 
-      - name: List build contents (debug)
-        run: |
-          echo "📁 Conteúdo da pasta dist:"
-          ls -la dist/
-          echo "📄 Verificando index.html:"
-          if [ -f "dist/index.html" ]; then
-            echo "✅ index.html encontrado"
-            head -n 10 dist/index.html
-          else
-            echo "❌ index.html NÃO encontrado!"
-          fi
-
-      - name: Deploy Information
-        run: |
-          echo "🚀 INICIANDO DEPLOY PARA GITHUB PAGES"
-          echo "📍 URL de destino: https://studyvault.github.io/harvest-calc-pro/"
-          echo "📂 Repositório: ${{ github.repository }}"
-          echo "🌿 Branch de origem: ${{ github.ref_name }}"
-          echo "🎯 Método: GitHub Pages API (oficial)"
-          echo "📦 Pasta a ser publicada: ./dist"
-          echo "⏰ Timestamp: $(date)"
-          echo "🏗️ Workflow ID: ${{ github.run_id }}"
-          echo "🔧 Workflow URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo ""
-          echo "🔍 VERIFICAÇÕES PRÉ-DEPLOY:"
-          echo "- Repositório owner: ${{ github.repository_owner }}"
-          echo "- Repositório name: ${{ github.event.repository.name }}"
-          echo "- GitHub Pages será: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo "- Confirmação URL final: https://studyvault.github.io/harvest-calc-pro/"
-          echo "==============================================="
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -130,13 +99,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Deploy Success Information
-        run: |
-          echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
-          echo "🌐 Site disponível em: https://studyvault.github.io/harvest-calc-pro/"
-          echo "🔗 URL do deploy: ${{ steps.deployment.outputs.page_url }}"
-          echo "⚠️  Aguarde alguns minutos para propagar as mudanças"
-          echo "🔄 Para verificar: Ctrl+F5 para limpar cache do navegador"
-          echo "📊 GitHub Pages Status: https://github.com/${{ github.repository }}/settings/pages"
-          echo "==============================================="
