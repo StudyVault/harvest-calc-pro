@@ -1,6 +1,5 @@
 import './styles/global.css';
 import CalculadoraCorteCana from './components/calculator/CalculadoraCorteCana';
-import './App.css';
 
 function App() {
   const deployInfo = {
