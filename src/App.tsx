@@ -2,9 +2,21 @@ import './styles/global.css';
 import CalculadoraCorteCana from './components/calculator/CalculadoraCorteCana';
 
 function App() {
+  // Gera automaticamente a data e hora atual
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace(',', ' -');
+  };
+
   const deployInfo = {
-    version: '1.2.0',
-    lastUpdate: '28/05/2025 - 21:40'
+    version: '1.2.1',
+    lastUpdate: getCurrentDateTime()
   };
 
   return (
