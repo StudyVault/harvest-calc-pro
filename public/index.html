@@ -27,25 +27,11 @@
     <link rel="apple-touch-startup-image" href="/icons/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
     <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
     
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Manifest will be auto-injected by Vite PWA plugin -->
     <title>Harvest Calc Pro</title>
   </head>
   <body>
     <noscript>Você precisa habilitar o JavaScript para executar este aplicativo.</noscript>
     <div id="root"></div>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-          try {
-            const registration = await navigator.serviceWorker.register('/service-worker.js', {
-              scope: '/'
-            });
-            console.log('ServiceWorker registrado com sucesso:', registration.scope);
-          } catch (error) {
-            console.error('Falha ao registrar o ServiceWorker:', error);
-          }
-        });
-      }
-    </script>
   </body>
 </html>

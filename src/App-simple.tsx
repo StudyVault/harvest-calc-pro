@@ -7,11 +7,7 @@ function App() {
     <div className="App">
       <header className="header">
         <div className="header-content">
-          <div className="logo-container">
-            <img src="./logo.svg" alt="Logo" className="logo" />
-          </div>
-          <h1 className="main-title">Harvest Calc Pro</h1>
-          <p className="subtitle">Calculadora Profissional para Corte de Cana</p>
+          <a href="/" className="logo">Harvest Calc Pro</a>
         </div>
       </header>
       
@@ -20,7 +16,9 @@ function App() {
       </main>
       
       <footer className="footer">
-        <p>&copy; 2024 Harvest Calc Pro. Todos os direitos reservados.</p>
+        <div className="container">
+          <p>© {new Date().getFullYear()} Harvest Calc Pro - Calculadora de Corte de Cana</p>
+        </div>
       </footer>
     </div>
   );

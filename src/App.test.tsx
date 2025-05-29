@@ -8,11 +8,17 @@ test('renders calculator title', () => {
   expect(titleElement).toBeInTheDocument();
 });
 
-test('renders logo link', () => {
+test('renders main title', () => {
   render(<App />);
-  const logoElement = screen.getByRole('link', { name: /harvest calc pro/i });
+  const titleElement = screen.getByRole('heading', { name: /harvest calc pro/i });
+  expect(titleElement).toBeInTheDocument();
+});
+
+test('renders logo image', () => {
+  render(<App />);
+  const logoElement = screen.getByRole('img', { name: /logo/i });
   expect(logoElement).toBeInTheDocument();
-  expect(logoElement).toHaveAttribute('href', '/');
+  expect(logoElement).toHaveAttribute('src', './logo.svg');
 });
 
 test('renders shape selection radio buttons', () => {
