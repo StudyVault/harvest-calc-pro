@@ -21,7 +21,7 @@ function App() {
           <p className="subtitle">Calculadora Profissional para Corte de Cana</p>
           <div className="deploy-info">
             <span className="deploy-badge">
-              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate}
+              🚀 v{deployInfo.version} | Atualizado: {deployInfo.lastUpdate} | TESTE1
             </span>
           </div>
         </div>
@@ -34,7 +34,7 @@ function App() {
       <footer className="footer">
         <p>&copy; 2024 Harvest Calc Pro. Todos os direitos reservados.</p>
         <p className="version-info">
-          v{deployInfo.version} | {deployInfo.lastUpdate}
+          v{deployInfo.version} | {deployInfo.lastUpdate} | TESTE1
         </p>
       </footer>
     </div>

@@ -40,7 +40,15 @@ self.addEventListener('install', (event) => {
 
 // Evento de ativação
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((cacheName) => !cacheName.startsWith('workbox'))
+          .map((cacheName) => caches.delete(cacheName))
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 // Evento de mensagem
