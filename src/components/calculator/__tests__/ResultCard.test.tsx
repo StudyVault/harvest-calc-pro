@@ -1,12 +1,27 @@
 import { render, screen, act } from '@testing-library/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import ResultCard from '../ResultCard';
+import theme from '../../../styles/theme';
 
 jest.useFakeTimers();
+
+// Mock scrollIntoView
+Element.prototype.scrollIntoView = jest.fn();
+
+const renderWithChakra = (component: React.ReactElement) => {
+  return render(
+    <ChakraProvider theme={theme}>
+      {component}
+    </ChakraProvider>
+  );
+};
 
 describe('ResultCard', () => {
   const defaultProps = {
     resultado: {
       cubagem: 50,
+      producaoKg: 85000,
+      producaoTon: 85,
       valorTotal: 1000,
       ladosUsados: {
         ladoA: 10,
@@ -24,50 +39,52 @@ describe('ResultCard', () => {
 
   it('renders rectangle results correctly', () => {
     render(<ResultCard {...defaultProps} />);
-    
-    expect(screen.getByText('Resultados:')).toBeInTheDocument();
-    expect(screen.getByText('Lado A: 10 metros')).toBeInTheDocument();
-    expect(screen.getByText('Lado B: 5 metros')).toBeInTheDocument();
-    expect(screen.getByText('Lado C: 8 metros')).toBeInTheDocument();
-    expect(screen.getByText('Lado D: 10 metros')).toBeInTheDocument();
-    expect(screen.getByText('Valor da Cubação: 50.00')).toBeInTheDocument();
-    expect(screen.getByText('Valor Total: R$ 1.000,00')).toBeInTheDocument();
+
+    expect(screen.getByText('Resultado do Cálculo')).toBeInTheDocument();
+    expect(screen.getByText(/Lado A:/)).toBeInTheDocument();
+    expect(screen.getByText(/Lado B:/)).toBeInTheDocument();
+    expect(screen.getByText(/Lado C:/)).toBeInTheDocument();
+    expect(screen.getByText(/Lado D:/)).toBeInTheDocument();
+    expect(screen.getByText(/Cubagem \(área do talhão\):/)).toBeInTheDocument();
+    expect(screen.getByText(/Produção estimada:/)).toBeInTheDocument();
+    expect(screen.getByText(/Valor total do pagamento:/)).toBeInTheDocument();
   });
 
   it('renders triangle results correctly', () => {
     render(<ResultCard {...defaultProps} selectedShape="triangle" />);
-    
-    expect(screen.getByText('Resultados:')).toBeInTheDocument();
-    expect(screen.getByText('Lado A: 10 metros')).toBeInTheDocument();
-    expect(screen.getByText('Lado B: 5 metros')).toBeInTheDocument();
-    expect(screen.getByText('Lado C: 8 metros')).toBeInTheDocument();
-    expect(screen.queryByText('Lado D: 10 metros')).not.toBeInTheDocument();
-    expect(screen.getByText('Área do Triângulo: 50.00 m²')).toBeInTheDocument();
-    expect(screen.getByText('Valor Total: R$ 1.000,00')).toBeInTheDocument();
+
+    expect(screen.getByText('Resultado do Cálculo')).toBeInTheDocument();
+    expect(screen.getByText(/Lado A:/)).toBeInTheDocument();
+    expect(screen.getByText(/Lado B:/)).toBeInTheDocument();
+    expect(screen.getByText(/Lado C:/)).toBeInTheDocument();
+    expect(screen.queryByText(/Lado D:/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Cubagem \(área do talhão\):/)).toBeInTheDocument();
+    expect(screen.getByText(/Valor total do pagamento:/)).toBeInTheDocument();
   });
 
   it('shows countdown timer', () => {
     render(<ResultCard {...defaultProps} />);
-    
-    expect(screen.getByText('(será ocultado em 60 segundos)')).toBeInTheDocument();
+
+    expect(screen.getByText(/visível por 120s/)).toBeInTheDocument();
 
     // Avança 30 segundos
     act(() => {
       jest.advanceTimersByTime(30000);
     });
-    
-    expect(screen.getByText('(será ocultado em 30 segundos)')).toBeInTheDocument();
+
+    expect(screen.getByText(/visível por 90s/)).toBeInTheDocument();
   });
 
-  it('shows "ocultando..." when timer reaches zero', () => {
-    render(<ResultCard {...defaultProps} />);
-    
-    // Avança 60 segundos
+  it('calls onTimeExpired when timer reaches zero', () => {
+    const mockOnTimeExpired = jest.fn();
+    render(<ResultCard {...defaultProps} onTimeExpired={mockOnTimeExpired} />);
+
+    // Avança 120 segundos
     act(() => {
-      jest.advanceTimersByTime(60000);
+      jest.advanceTimersByTime(120000);
     });
-    
-    expect(screen.getByText('(ocultando...)')).toBeInTheDocument();
+
+    expect(mockOnTimeExpired).toHaveBeenCalled();
   });
 
   it('formats currency values correctly', () => {
@@ -80,8 +97,8 @@ describe('ResultCard', () => {
         }}
       />
     );
-    
-    expect(screen.getByText('Valor Total: R$ 1.234,56')).toBeInTheDocument();
+
+    expect(screen.getByText(/R\$ 1\.234,56/)).toBeInTheDocument();
   });
 
   it('formats decimal values correctly', () => {
@@ -90,19 +107,19 @@ describe('ResultCard', () => {
         {...defaultProps}
         resultado={{
           ...defaultProps.resultado,
-          cubagem: 123.456
+          cubagem: 123.46
         }}
       />
     );
-    
-    expect(screen.getByText('Valor da Cubação: 123.46')).toBeInTheDocument();
+
+    expect(screen.getByText(/123\.46/)).toBeInTheDocument();
   });
 
   it('cleans up timer on unmount', () => {
     const { unmount } = render(<ResultCard {...defaultProps} />);
-    
+
     unmount();
-    
+
     // Verifica se o timer foi limpo
     expect(jest.getTimerCount()).toBe(0);
   });

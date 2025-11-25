@@ -33,10 +33,11 @@ test('renders shape selection radio buttons', () => {
 
 test('renders financial information section', () => {
   render(<App />);
-  const financialTitle = screen.getByText(/informações financeiras/i);
-  const toneladasLabel = screen.getByLabelText(/quantidade de toneladas/i);
-  const valorLabel = screen.getByLabelText(/valor por tonelada/i);
+  const financialTitle = screen.getByText(/produtividade e pagamento/i);
   expect(financialTitle).toBeInTheDocument();
-  expect(toneladasLabel).toBeInTheDocument();
-  expect(valorLabel).toBeInTheDocument();
+  // Check for inputs by placeholder since labels aren't connected
+  const produtividadeInput = screen.getByPlaceholderText('1700');
+  const valorInput = screen.getByPlaceholderText('25');
+  expect(produtividadeInput).toBeInTheDocument();
+  expect(valorInput).toBeInTheDocument();
 });

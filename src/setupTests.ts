@@ -49,3 +49,6 @@ global.fetch = jest.fn(() =>
     status: 200,
   })
 ) as jest.Mock;
+
+// Mock para scrollIntoView
+Element.prototype.scrollIntoView = jest.fn();
