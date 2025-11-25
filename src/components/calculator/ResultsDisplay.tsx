@@ -4,29 +4,26 @@ import { CalculationResult } from '../../types/calculator';
 interface ResultsDisplayProps {
   result: CalculationResult;
   showResults: boolean;
-  selectedShape: 'rectangle' | 'triangle';
+  selectedShape?: 'rectangle' | 'triangle'; // Opcional para compatibilidade
 }
 
-const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, showResults, selectedShape }) => {
+/**
+ * Componente de exibição de resultados (legado - use ResultCard ao invés)
+ * @deprecated Use ResultCard para melhor visualização
+ */
+const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, showResults }) => {
   if (!showResults) return null;
   
   return (
     <div className="result-card">
       <h3>Resultados:</h3>
-      {selectedShape === 'rectangle' ? (
-        <div className="result-item">
-          <span>Área do Retângulo:</span>
-          <span className="result-value">{result.areaRetangulo.toFixed(2)} m²</span>
-        </div>
-      ) : (
-        <div className="result-item">
-          <span>Área do Triângulo:</span>
-          <span className="result-value">{result.areaTriangulo.toFixed(2)} m²</span>
-        </div>
-      )}
       <div className="result-item">
-        <span>Área Total:</span>
-        <span className="result-value">{result.areaTotal.toFixed(2)} m²</span>
+        <span>Cubagem (área):</span>
+        <span className="result-value">{result.cubagem.toFixed(2)} braças²</span>
+      </div>
+      <div className="result-item">
+        <span>Produção:</span>
+        <span className="result-value">{result.producaoKg.toLocaleString('pt-BR')} kg ({result.producaoTon.toFixed(3)} ton)</span>
       </div>
       <div className="result-item">
         <span>Valor Total:</span>

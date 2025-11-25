@@ -1,3 +1,6 @@
+/**
+ * Dimensões do talhão em braças
+ */
 export interface Dimensions {
   ladoA: number;
   ladoB: number;
@@ -5,16 +8,28 @@ export interface Dimensions {
   ladoD: number;
 }
 
+/**
+ * Dados financeiros e de produtividade
+ */
 export interface FinancialData {
-  toneladas: number;
-  valorPorTonelada: number;
+  produtividade: number; // kg por braça²
+  valorPorKg: number; // R$ por kg (convertido de centavos)
 }
 
+/**
+ * Resultado dos cálculos
+ */
 export interface CalculationResult {
-  areaRetangulo: number;
-  areaTriangulo: number;
-  areaTotal: number;
-  valorTotal: number;
+  cubagem: number; // área em braças²
+  producaoKg: number; // produção total em kg
+  producaoTon: number; // produção total em toneladas
+  valorTotal: number; // valor total em R$
+  ladosUsados: {
+    ladoA: number;
+    ladoB: number;
+    ladoC: number;
+    ladoD: number;
+  };
 }
 
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;

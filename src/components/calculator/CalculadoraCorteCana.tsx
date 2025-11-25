@@ -16,193 +16,180 @@ import Triangle from './Triangle';
 import FinancialForm from './FinancialForm';
 import DimensionsForm from './DimensionsForm';
 import ResultCard from './ResultCard';
-import { usePercentageInput } from '../../hooks/usePercentageInput';
+import { useAreaCalculations } from '../../hooks/useAreaCalculations';
 
+/**
+ * Componente principal da calculadora de corte de cana-de-açúcar
+ * 
+ * Permite o cálculo de cubagem, produção e pagamento baseado em:
+ * - Dimensões do talhão (em braças)
+ * - Produtividade (kg por braça²)
+ * - Valor de pagamento (R$ por tonelada)
+ */
 const CalculadoraCorteCana: React.FC = () => {
-  const [valores, setValores] = useState({
-    toneladas: 3,
-    valorPorTonelada: 0.20,
+  // Estado para dimensões do talhão
+  const [dimensoes, setDimensoes] = useState({
     ladoA: 0,
     ladoB: 0,
     ladoC: 0,
     ladoD: 0
   });
 
-  const [showResult, setShowResult] = useState(false);
-  const { displayValue, handlePercentageChange } = usePercentageInput(valores.valorPorTonelada);
+  // Estado para produtividade e valores financeiros
+  const [produtividade, setProdutividade] = useState(1700); // kg por braça²
+  const [valorPorKg, setValorPorKg] = useState(25); // centavos por tonelada (25 = R$ 0,25/ton)
 
-  const [resultado, setResultado] = useState({
-    cubagem: 0,
-    valorTotal: 0,
-    areaRetangulo: 0,
-    areaTriangulo: 0,
-    areaTotal: 0,
-    ladosUsados: {
+  // Estado para controle de exibição do resultado
+  const [showResult, setShowResult] = useState(false);
+
+  // Estado para seleção de forma geométrica
+  const [selectedShape, setSelectedShape] = useState<'rectangle' | 'triangle'>('rectangle');
+
+  // Hook para cálculos
+  const { result, calculateAreas } = useAreaCalculations();
+
+  const toast = useToast();
+
+  // Efeito para ocultar automaticamente o resultado após 120 segundos
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showResult) {
+      timer = setTimeout(() => {
+        setShowResult(false);
+      }, 120000); // 120 segundos
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [showResult]);
+
+  /**
+   * Limpa os inputs quando o timer expirar
+   */
+  const handleTimeExpired = () => {
+    setDimensoes({
       ladoA: 0,
       ladoB: 0,
       ladoC: 0,
       ladoD: 0
-    }
-  });
+    });
+    setShowResult(false);
+  };
 
-  const [selectedShape, setSelectedShape] = useState<'rectangle' | 'triangle'>('rectangle');
-
-  const toast = useToast();
-
-  // Função para lidar com a mudança de forma
+  /**
+   * Manipula mudanças de forma (retângulo/triângulo)
+   */
   const handleShapeChange = (value: 'rectangle' | 'triangle') => {
     setSelectedShape(value);
     
-    // Se mudando de retângulo para triângulo, zerar o ladoD
+    // Se mudando para triângulo, zerar o ladoD
     if (value === 'triangle') {
-      setValores(prev => ({
+      setDimensoes(prev => ({
         ...prev,
         ladoD: 0
       }));
     }
   };
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (showResult && resultado.valorTotal > 0) {
-      console.log('Iniciando timer de 60 segundos...');
-      timer = setTimeout(() => {
-        console.log('Timer finalizado, ocultando resultado...');
-        setShowResult(false);
-        setResultado(prev => ({
-          ...prev,
-          valorTotal: 0
-        }));
-      }, 60000);
-    }
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [showResult, resultado.valorTotal]);
-
+  /**
+   * Manipula mudanças nos campos de entrada
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'valorPorTonelada') {
-      handlePercentageChange(e, (newValue) => {
-        setValores(prev => ({
-          ...prev,
-          valorPorTonelada: newValue
-        }));
-      });
-      return;
-    }
+    const numericValue = value === '' ? 0 : parseFloat(value);
 
-    if (value === '') {
-      setValores(prev => ({
-        ...prev,
-        [name]: 0
-      }));
+    // Valida se é um número válido
+    if (isNaN(numericValue)) return;
+
+    // Atualiza o estado apropriado
+    if (name === 'produtividade') {
+      setProdutividade(numericValue);
+    } else if (name === 'valorPorKg') {
+      setValorPorKg(numericValue);
     } else {
-      const numericValue = parseFloat(value.replace(/^0+/, ''));
-      setValores(prev => ({
+      setDimensoes(prev => ({
         ...prev,
         [name]: numericValue
       }));
     }
   };
 
-  const formatInputValue = (value: number) => {
-    return value === 0 ? '' : value.toString();
+  /**
+   * Valida os campos antes de calcular
+   */
+  const validarCampos = (): boolean => {
+    // Validação para retângulo
+    if (selectedShape === 'rectangle') {
+      if (!dimensoes.ladoA || !dimensoes.ladoB || !dimensoes.ladoC || !dimensoes.ladoD) {
+        toast({
+          title: 'Campos obrigatórios',
+          description: 'Por favor, preencha todos os 4 lados do retângulo.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+        return false;
+      }
+    }
+
+    // Validação para triângulo
+    if (selectedShape === 'triangle') {
+      if (!dimensoes.ladoA || !dimensoes.ladoB || !dimensoes.ladoC) {
+        toast({
+          title: 'Campos obrigatórios',
+          description: 'Por favor, preencha os 3 lados do triângulo (A e B como bases, C como altura).',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+        return false;
+      }
+    }
+
+    // Validação de produtividade
+    if (!produtividade || produtividade <= 0) {
+      toast({
+        title: 'Produtividade inválida',
+        description: 'Por favor, insira uma produtividade maior que zero.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+    // Validação de valor por kg
+    if (!valorPorKg || valorPorKg <= 0) {
+      toast({
+        title: 'Valor por kg inválido',
+        description: 'Por favor, insira um valor por kg maior que zero.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+    return true;
   };
 
+  /**
+   * Executa o cálculo de cubagem e pagamento
+   */
   const calcularPagamento = () => {
-    if (selectedShape === 'rectangle' && (!valores.ladoA || !valores.ladoB || !valores.ladoC || !valores.ladoD)) {
-      toast({
-        title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todos os campos necessários para o retângulo.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+    // Valida os campos
+    if (!validarCampos()) return;
 
-    if (selectedShape === 'triangle' && (!valores.ladoA || !valores.ladoB || !valores.ladoC)) {
-      toast({
-        title: 'Campos obrigatórios',
-        description: 'Por favor, preencha todos os campos necessários para o triângulo.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+    // Executa o cálculo (valorPorKg será convertido para R$/kg no hook)
+    calculateAreas(dimensoes, produtividade, valorPorKg, selectedShape);
 
-    if (!valores.toneladas || valores.toneladas <= 0) {
-      toast({
-        title: 'Quantidade de toneladas inválida',
-        description: 'Por favor, insira uma quantidade de toneladas maior que zero.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+    // Exibe o resultado
+    setShowResult(true);
 
-    if (!valores.valorPorTonelada || valores.valorPorTonelada <= 0) {
-      toast({
-        title: 'Valor por tonelada inválido',
-        description: 'Por favor, insira um valor por tonelada maior que zero.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setShowResult(false);
-    
-    let cubagem = 0;
-    let valorTotal = 0;
-
-    const ladosUsados = {
-      ladoA: valores.ladoA,
-      ladoB: valores.ladoB,
-      ladoC: valores.ladoC,
-      ladoD: valores.ladoD
-    };
-
-    if (selectedShape === 'rectangle') {
-      cubagem = ((valores.ladoA + valores.ladoB) / 2) * ((valores.ladoC + valores.ladoD) / 2);
-    } else {
-      cubagem = ((valores.ladoA + valores.ladoB) / 2) * (valores.ladoC / 2);
-    }
-
-    const valorPorToneladaTotal = valores.toneladas * valores.valorPorTonelada;
-    valorTotal = cubagem * valorPorToneladaTotal;
-
-    setResultado({
-      cubagem,
-      valorTotal,
-      areaRetangulo: selectedShape === 'rectangle' ? cubagem : 0,
-      areaTriangulo: selectedShape === 'triangle' ? cubagem : 0,
-      areaTotal: cubagem,
-      ladosUsados
-    });
-
-    setTimeout(() => {
-      setShowResult(true);
-    }, 0);
-
-    setValores(prev => ({
-      ...prev,
-      ladoA: 0,
-      ladoB: 0,
-      ladoC: 0,
-      ladoD: 0
-    }));
-
+    // Feedback de sucesso
     toast({
-      title: 'Cálculo realizado',
-      description: 'Os valores foram calculados com sucesso. O resultado será exibido por 60 segundos.',
+      title: 'Cálculo realizado com sucesso',
+      description: 'Confira os resultados abaixo.',
       status: 'success',
       duration: 2000,
       isClosable: true,
@@ -212,10 +199,12 @@ const CalculadoraCorteCana: React.FC = () => {
   return (
     <Container maxW="container.lg" py={8}>
       <VStack spacing={8} align="stretch">
+        {/* Título */}
         <Heading textAlign="center" color="brand.700" size="xl">
           Calculadora de Pagamento de Corte de Cana
         </Heading>
 
+        {/* Seleção de forma */}
         <Box>
           <RadioGroup
             value={selectedShape}
@@ -231,31 +220,36 @@ const CalculadoraCorteCana: React.FC = () => {
             </Box>
           </RadioGroup>
 
-          <Box>
+          {/* Visualização da forma */}
+          <Box mt={4}>
             {selectedShape === 'rectangle' ? (
-              <Rectangle dimensions={valores} />
+              <Rectangle dimensions={dimensoes} />
             ) : (
-              <Triangle dimensions={valores} />
+              <Triangle dimensions={dimensoes} />
             )}
           </Box>
 
           <Divider my={6} />
 
+          {/* Formulários */}
           <VStack spacing={6} align="stretch">
-            <FinancialForm
-              toneladas={valores.toneladas}
-              displayValue={displayValue}
-              onInputChange={handleInputChange}
-              formatInputValue={formatInputValue}
-            />
-
+            {/* A. Dimensões do Talhão */}
             <DimensionsForm
-              valores={valores}
+              valores={dimensoes}
               selectedShape={selectedShape}
               onInputChange={handleInputChange}
-              formatInputValue={formatInputValue}
             />
 
+            <Divider />
+
+            {/* B. Produtividade e C. Valor do Pagamento */}
+            <FinancialForm
+              produtividade={produtividade}
+              valorPorKg={valorPorKg}
+              onInputChange={handleInputChange}
+            />
+
+            {/* Botão de cálculo */}
             <Button
               colorScheme="green"
               size="lg"
@@ -263,13 +257,15 @@ const CalculadoraCorteCana: React.FC = () => {
               onClick={calcularPagamento}
               leftIcon={<BsCalculator />}
             >
-              Calcular
+              Calcular Pagamento
             </Button>
 
-            {showResult && resultado.valorTotal > 0 && (
+            {/* D. Resultado */}
+            {showResult && (
               <ResultCard
-                resultado={resultado}
+                resultado={result}
                 selectedShape={selectedShape}
+                onTimeExpired={handleTimeExpired}
               />
             )}
           </VStack>
