@@ -1,6 +1,6 @@
 // src/components/calculator/wizard/components/WizardNavigation.tsx
 import React from 'react';
-import { Box, Button, Text } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 
 interface WizardNavigationProps {
   onNext: () => void;
@@ -28,16 +28,16 @@ const WizardNavigation: React.FC<WizardNavigationProps> = ({
       {nextLabel}
     </Button>
     {showBack && (
-      <Text
-        textAlign="center"
+      <Button
+        variant="ghost"
+        width="100%"
         mt={4}
         color="gray.500"
         fontSize="lg"
-        cursor="pointer"
         onClick={onBack}
       >
         ← Voltar
-      </Text>
+      </Button>
     )}
   </Box>
 );
