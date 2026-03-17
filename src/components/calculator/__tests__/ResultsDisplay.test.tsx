@@ -4,10 +4,16 @@ import ResultsDisplay from '../ResultsDisplay';
 describe('ResultsDisplay', () => {
   const defaultProps = {
     result: {
-      areaRetangulo: 50,
-      areaTriangulo: 0,
-      areaTotal: 50,
-      valorTotal: 1000
+      cubagem: 50,
+      producaoKg: 85000,
+      producaoTon: 85,
+      valorTotal: 1000,
+      ladosUsados: {
+        ladoA: 10,
+        ladoB: 5,
+        ladoC: 8,
+        ladoD: 10
+      }
     },
     showResults: true,
     selectedShape: 'rectangle' as const
@@ -17,10 +23,12 @@ describe('ResultsDisplay', () => {
     render(<ResultsDisplay {...defaultProps} />);
     
     expect(screen.getByText('Resultados:')).toBeInTheDocument();
-    expect(screen.getByText('Área do Retângulo:')).toBeInTheDocument();
-    expect(screen.getAllByText('50.00 m²')).toHaveLength(2);
-    expect(screen.getByText('Área Total:')).toBeInTheDocument();
-    expect(screen.getByText('R$ 1000.00')).toBeInTheDocument();
+    expect(screen.getByText('Cubagem (área):')).toBeInTheDocument();
+    expect(screen.getByText(/50\.00 braças²/)).toBeInTheDocument();
+    expect(screen.getByText('Produção:')).toBeInTheDocument();
+    expect(screen.getByText(/85\.000 kg/)).toBeInTheDocument();
+    expect(screen.getByText('Valor Total:')).toBeInTheDocument();
+    expect(screen.getByText(/R\$ 1000\.00/)).toBeInTheDocument();
   });
 
   it('renders triangle results correctly', () => {
@@ -30,17 +38,18 @@ describe('ResultsDisplay', () => {
         selectedShape="triangle"
         result={{
           ...defaultProps.result,
-          areaTriangulo: 30,
-          areaTotal: 30
+          cubagem: 30,
+          producaoKg: 51000,
+          producaoTon: 51
         }}
       />
     );
     
     expect(screen.getByText('Resultados:')).toBeInTheDocument();
-    expect(screen.getByText('Área do Triângulo:')).toBeInTheDocument();
-    expect(screen.getAllByText('30.00 m²')).toHaveLength(2);
-    expect(screen.getByText('Área Total:')).toBeInTheDocument();
-    expect(screen.getByText('R$ 1000.00')).toBeInTheDocument();
+    expect(screen.getByText('Cubagem (área):')).toBeInTheDocument();
+    expect(screen.getByText(/30\.00 braças²/)).toBeInTheDocument();
+    expect(screen.getByText('Produção:')).toBeInTheDocument();
+    expect(screen.getByText('Valor Total:')).toBeInTheDocument();
   });
 
   it('does not render when showResults is false', () => {
@@ -55,16 +64,14 @@ describe('ResultsDisplay', () => {
         {...defaultProps}
         result={{
           ...defaultProps.result,
-          areaRetangulo: 123.456,
-          areaTotal: 123.456,
-          valorTotal: 1234.567
+          cubagem: 123.46,
+          valorTotal: 1234.57
         }}
       />
     );
     
-    const areaValues = screen.getAllByText('123.46 m²');
-    expect(areaValues).toHaveLength(2);
-    expect(screen.getByText('R$ 1234.57')).toBeInTheDocument();
+    expect(screen.getByText(/123\.46 braças²/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$ 1234\.57/)).toBeInTheDocument();
   });
 
   it('handles zero values correctly', () => {
@@ -72,16 +79,16 @@ describe('ResultsDisplay', () => {
       <ResultsDisplay
         {...defaultProps}
         result={{
-          areaRetangulo: 0,
-          areaTriangulo: 0,
-          areaTotal: 0,
+          ...defaultProps.result,
+          cubagem: 0,
+          producaoKg: 0,
+          producaoTon: 0,
           valorTotal: 0
         }}
       />
     );
     
-    const zeroValues = screen.getAllByText('0.00 m²');
-    expect(zeroValues).toHaveLength(2);
-    expect(screen.getByText('R$ 0.00')).toBeInTheDocument();
+    expect(screen.getByText(/0\.00 braças²/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$ 0\.00/)).toBeInTheDocument();
   });
 }); 
