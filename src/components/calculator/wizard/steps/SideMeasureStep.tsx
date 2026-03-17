@@ -16,10 +16,10 @@ interface SideMeasureStepProps {
 }
 
 const SIDE_LABELS: Record<Side, string> = {
-  a: 'Qual é a medida do lado de cima? (metros)',
-  b: 'Qual é a medida do lado esquerdo? (metros)',
-  c: 'Qual é a medida do lado de baixo? (metros)',
-  d: 'Qual é a medida do lado direito? (metros)',
+  a: 'Qual é a medida do lado de cima? (braças)',
+  b: 'Qual é a medida do lado esquerdo? (braças)',
+  c: 'Qual é a medida do lado de baixo? (braças)',
+  d: 'Qual é a medida do lado direito? (braças)',
 };
 
 const SideMeasureStep: React.FC<SideMeasureStepProps> = ({
@@ -79,7 +79,7 @@ const SideMeasureStep: React.FC<SideMeasureStepProps> = ({
                 _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
               />
               <InputRightAddon height="64px" fontSize="xl" bg="gray.100">
-                m
+                br
               </InputRightAddon>
             </InputGroup>
             {error && (

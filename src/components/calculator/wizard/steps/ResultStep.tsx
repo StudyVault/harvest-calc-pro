@@ -50,7 +50,7 @@ const ResultStep: React.FC<ResultStepProps> = ({
             RESUMO
           </Text>
           <VStack align="start" spacing={1}>
-            <Text color="white" fontSize="lg">Área: {area.toFixed(2)} m²</Text>
+            <Text color="white" fontSize="lg">Área: {area.toFixed(2)} braças²</Text>
             <Text color="white" fontSize="lg">Toneladas: {toneladas}</Text>
             <Text color="white" fontSize="lg">Taxa: {(valorPorTonelada * 100).toFixed(0)}%</Text>
           </VStack>
