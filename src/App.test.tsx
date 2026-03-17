@@ -23,10 +23,6 @@ test('renders wizard shape selection step', () => {
 
 test('renders rectangle and triangle shape buttons', () => {
   render(<App />);
-  const financialTitle = screen.getByText(/informações financeiras/i);
-  const toneladasLabel = screen.getByLabelText(/quantidade de toneladas/i);
-  const valorLabel = screen.getByLabelText(/valor por tonelada/i);
-  expect(financialTitle).toBeInTheDocument();
-  expect(toneladasLabel).toBeInTheDocument();
-  expect(valorLabel).toBeInTheDocument();
+  expect(screen.getByText('RETÂNGULO')).toBeInTheDocument();
+  expect(screen.getByText('TRIÂNGULO')).toBeInTheDocument();
 });
