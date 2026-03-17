@@ -5,16 +5,16 @@ import { Box, VStack, Text, Button } from '@chakra-ui/react';
 interface ResultStepProps {
   valorTotal: number;
   area: number;
-  toneladas: number;
-  valorPorTonelada: number;
+  produtividade: number;
+  valorCentavos: number;
   onNewCalculation: () => void;
 }
 
 const ResultStep: React.FC<ResultStepProps> = ({
   valorTotal,
   area,
-  toneladas,
-  valorPorTonelada,
+  produtividade,
+  valorCentavos,
   onNewCalculation,
 }) => {
   const formattedValue = new Intl.NumberFormat('pt-BR', {
@@ -51,8 +51,8 @@ const ResultStep: React.FC<ResultStepProps> = ({
           </Text>
           <VStack align="start" spacing={1}>
             <Text color="white" fontSize="lg">Área: {area.toFixed(2)} braças²</Text>
-            <Text color="white" fontSize="lg">Toneladas: {toneladas}</Text>
-            <Text color="white" fontSize="lg">Taxa: {(valorPorTonelada * 100).toFixed(0)}%</Text>
+            <Text color="white" fontSize="lg">Produtividade: {produtividade} kg/br²</Text>
+            <Text color="white" fontSize="lg">Valor: {valorCentavos} centavos/t</Text>
           </VStack>
         </Box>
 

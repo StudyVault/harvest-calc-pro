@@ -1,7 +1,6 @@
 // src/components/calculator/wizard/WizardContainer.tsx
 import React, { useState } from 'react';
 import { Shape, Side, WizardState } from './types';
-import { usePercentageInput } from '../../../hooks/usePercentageInput';
 import ShapeStep from './steps/ShapeStep';
 import SideMeasureStep from './steps/SideMeasureStep';
 import PaymentStep from './steps/PaymentStep';
@@ -35,22 +34,22 @@ const TRIANGLE_STEPS: WizardStep[] = [
 const INITIAL_STATE: WizardState = {
   shape: null,
   sides: { a: 0, b: 0, c: 0, d: 0 },
-  toneladas: 3,
-  valorPorTonelada: 0.2,
+  produtividade: 1700,
+  valorCentavos: 25,
   result: null,
 };
 
-// Formula preserved from the original CalculadoraCorteCana.calcularPagamento:
-// rectangle: average of opposite sides × average of other pair (trapezoid approximation)
-// triangle: average of A+B sides × half of C (base)
-// Note: useAreaCalculations hook uses a different formula and was not used by the original component.
+// Formula validated by the user against real-world results:
+// Rectangle: average of top+bottom × average of left+right (trapezoid approximation)
+// Triangle: average of a+b sides × half of c (base)
+// Then: area × produtividade / 1000 × valorCentavos / 100 = R$ total
 const calculateResult = (state: WizardState): { area: number; valorTotal: number } => {
   const { a, b, c, d } = state.sides;
   const area =
     state.shape === 'rectangle'
-      ? ((a + b) / 2) * ((c + d) / 2)
+      ? ((a + c) / 2) * ((b + d) / 2)
       : ((a + b) / 2) * (c / 2);
-  const valorTotal = area * state.toneladas * state.valorPorTonelada;
+  const valorTotal = area * (state.produtividade / 1000) * (state.valorCentavos / 100);
   return { area, valorTotal };
 };
 
@@ -60,11 +59,8 @@ const WizardContainer: React.FC = () => {
   const [sideInputs, setSideInputs] = useState<Record<Side, string>>({
     a: '', b: '', c: '', d: '',
   });
-  const [toneladasInput, setToneladasInput] = useState('3');
-
-  const { displayValue, handlePercentageChange } = usePercentageInput(
-    wizardState.valorPorTonelada
-  );
+  const [produtividadeInput, setProdutividadeInput] = useState('1700');
+  const [valorCentavosInput, setValorCentavosInput] = useState('25');
 
   const steps = wizardState.shape === 'triangle' ? TRIANGLE_STEPS : RECTANGLE_STEPS;
   const currentStep = steps[stepIndex];
@@ -91,10 +87,12 @@ const WizardContainer: React.FC = () => {
   };
 
   const handlePaymentNext = () => {
-    const toneladas = parseFloat(toneladasInput);
+    const produtividade = parseFloat(produtividadeInput);
+    const valorCentavos = parseFloat(valorCentavosInput);
     const updatedState: WizardState = {
       ...wizardState,
-      toneladas,
+      produtividade,
+      valorCentavos,
     };
     const result = calculateResult(updatedState);
     setWizardState({ ...updatedState, result });
@@ -104,7 +102,8 @@ const WizardContainer: React.FC = () => {
   const handleNewCalculation = () => {
     setWizardState(INITIAL_STATE);
     setSideInputs({ a: '', b: '', c: '', d: '' });
-    setToneladasInput('3');
+    setProdutividadeInput('1700');
+    setValorCentavosInput('25');
     setStepIndex(0);
   };
 
@@ -135,14 +134,10 @@ const WizardContainer: React.FC = () => {
   if (currentStep.type === 'payment') {
     return (
       <PaymentStep
-        toneladas={toneladasInput}
-        valorDisplay={displayValue}
-        onToneladasChange={setToneladasInput}
-        onValorChange={e =>
-          handlePercentageChange(e, newValue =>
-            setWizardState(prev => ({ ...prev, valorPorTonelada: newValue }))
-          )
-        }
+        produtividade={produtividadeInput}
+        valorCentavos={valorCentavosInput}
+        onProdutividadeChange={setProdutividadeInput}
+        onValorCentavosChange={setValorCentavosInput}
         onNext={handlePaymentNext}
         onBack={goBack}
       />
@@ -155,8 +150,8 @@ const WizardContainer: React.FC = () => {
     <ResultStep
       valorTotal={result.valorTotal}
       area={result.area}
-      toneladas={wizardState.toneladas}
-      valorPorTonelada={wizardState.valorPorTonelada}
+      produtividade={wizardState.produtividade}
+      valorCentavos={wizardState.valorCentavos}
       onNewCalculation={handleNewCalculation}
     />
   );

@@ -65,7 +65,7 @@ Igual ao retângulo, sem o passo 5 (Lado D).
 
 ### Telas 2–5 — Medidas dos Lados
 
-- Header verde com indicador de progresso e lembrete da forma escolhida
+- Header verde com indicador de progresso (3 segmentos: **Forma / Medidas / Pagamento**) e lembrete da forma escolhida
 - Diagrama SVG do terreno com **o lado atual destacado em laranja/amarelo**
 - Pergunta em linguagem simples: "Qual é a medida do lado de cima?"
 - Input único, grande (altura 64px, fonte 28px), tipo numérico, unidade "m" à direita
@@ -75,8 +75,9 @@ Igual ao retângulo, sem o passo 5 (Lado D).
 ### Tela 6 — Pagamento
 
 - Dois campos em coluna única:
-  - "Quantas toneladas foram cortadas?" — input numérico
+  - "Quantas toneladas foram cortadas?" — input numérico inteiro
   - "Qual é o valor por tonelada? (%)" — input com "%" à direita, hint: "Ex: 20 para 20%"
+    - O hook `usePercentageInput` existente já gerencia a conversão: o usuário digita `20`, o estado interno armazena `0.20`. Esse contrato deve ser mantido.
 - Botão "🧮 CALCULAR" em verde, tamanho grande
 - Botão "← Voltar" acima
 
@@ -187,7 +188,7 @@ Mantida sem alteração nos hooks existentes (`useAreaCalculations`). Apenas o g
 - Lógica de cálculo existente (`useAreaCalculations`, `usePercentageInput`)
 - Paleta de cores verde
 - PWA e service worker
-- Testes existentes (serão adaptados para nova estrutura)
+- Testes existentes (serão adaptados para nova estrutura — cada novo componente de passo deve ter teste de renderização e de navegação; a lógica de cálculo já está coberta pelos testes de hooks existentes)
 - Validações existentes (`validation.ts`)
 
 ---

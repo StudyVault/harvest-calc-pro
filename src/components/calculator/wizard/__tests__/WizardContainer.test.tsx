@@ -45,11 +45,10 @@ describe('WizardContainer', () => {
       fireEvent.click(screen.getByText('PRÓXIMO →'));
     });
 
-    // Step 6: payment — fill both fields explicitly
+    // Step 6: payment — fill both fields (both are spinbuttons)
     const inputs = screen.getAllByRole('spinbutton');
-    fireEvent.change(inputs[0], { target: { value: '3' } });
-    const valorInput = screen.getByRole('textbox');
-    fireEvent.change(valorInput, { target: { name: 'valorPorTonelada', value: '20' } });
+    fireEvent.change(inputs[0], { target: { value: '1700' } });
+    fireEvent.change(inputs[1], { target: { value: '25' } });
     fireEvent.click(screen.getByText(/calcular/i));
 
     // Step 7: result
@@ -69,9 +68,8 @@ describe('WizardContainer', () => {
       fireEvent.click(screen.getByText('PRÓXIMO →'));
     });
     const inputs = screen.getAllByRole('spinbutton');
-    fireEvent.change(inputs[0], { target: { value: '3' } });
-    const valorInput = screen.getByRole('textbox');
-    fireEvent.change(valorInput, { target: { name: 'valorPorTonelada', value: '20' } });
+    fireEvent.change(inputs[0], { target: { value: '1700' } });
+    fireEvent.change(inputs[1], { target: { value: '25' } });
     fireEvent.click(screen.getByText(/calcular/i));
 
     // Reset

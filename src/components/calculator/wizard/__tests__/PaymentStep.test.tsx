@@ -10,17 +10,17 @@ const renderWithChakra = (component: React.ReactElement) =>
 
 describe('PaymentStep', () => {
   const baseProps = {
-    toneladas: '3',
-    valorDisplay: '20',
-    onToneladasChange: jest.fn(),
-    onValorChange: jest.fn(),
+    produtividade: '1700',
+    valorCentavos: '25',
+    onProdutividadeChange: jest.fn(),
+    onValorCentavosChange: jest.fn(),
     onNext: jest.fn(),
     onBack: jest.fn(),
   };
 
-  it('renders toneladas field', () => {
+  it('renders produtividade field', () => {
     renderWithChakra(<PaymentStep {...baseProps} />);
-    expect(screen.getByText(/toneladas/i)).toBeInTheDocument();
+    expect(screen.getByText(/produtividade/i)).toBeInTheDocument();
   });
 
   it('renders valor por tonelada field', () => {
@@ -33,10 +33,16 @@ describe('PaymentStep', () => {
     expect(screen.getByText(/calcular/i)).toBeInTheDocument();
   });
 
-  it('shows error when toneladas is zero and CALCULAR clicked', () => {
-    renderWithChakra(<PaymentStep {...baseProps} toneladas="0" />);
+  it('shows error when produtividade is zero and CALCULAR clicked', () => {
+    renderWithChakra(<PaymentStep {...baseProps} produtividade="0" />);
     fireEvent.click(screen.getByText(/calcular/i));
-    expect(screen.getByText('Digite a quantidade de toneladas')).toBeInTheDocument();
+    expect(screen.getByText('Digite a produtividade em kg por braça²')).toBeInTheDocument();
+  });
+
+  it('shows error when valorCentavos is zero and CALCULAR clicked', () => {
+    renderWithChakra(<PaymentStep {...baseProps} valorCentavos="0" />);
+    fireEvent.click(screen.getByText(/calcular/i));
+    expect(screen.getByText('Digite o valor por tonelada em centavos')).toBeInTheDocument();
   });
 
   it('calls onNext when all fields are valid', () => {

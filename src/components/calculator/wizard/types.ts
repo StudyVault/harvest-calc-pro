@@ -18,7 +18,7 @@ export interface WizardResult {
 export interface WizardState {
   shape: Shape | null;
   sides: WizardSides;
-  toneladas: number;
-  valorPorTonelada: number; // decimal: 0.20 para 20%
+  produtividade: number; // kg por braça²
+  valorCentavos: number; // centavos por tonelada
   result: WizardResult | null;
 }

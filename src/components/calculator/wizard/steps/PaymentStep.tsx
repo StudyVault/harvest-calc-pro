@@ -7,34 +7,34 @@ import ProgressBar from '../components/ProgressBar';
 import WizardNavigation from '../components/WizardNavigation';
 
 interface PaymentStepProps {
-  toneladas: string;
-  valorDisplay: string; // display value from usePercentageInput (e.g. "20")
-  onToneladasChange: (v: string) => void;
-  onValorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  produtividade: string;
+  valorCentavos: string;
+  onProdutividadeChange: (v: string) => void;
+  onValorCentavosChange: (v: string) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
 const PaymentStep: React.FC<PaymentStepProps> = ({
-  toneladas,
-  valorDisplay,
-  onToneladasChange,
-  onValorChange,
+  produtividade,
+  valorCentavos,
+  onProdutividadeChange,
+  onValorCentavosChange,
   onNext,
   onBack,
 }) => {
-  const [errors, setErrors] = useState<{ toneladas?: string; valor?: string }>({});
+  const [errors, setErrors] = useState<{ produtividade?: string; valor?: string }>({});
 
   const handleNext = () => {
-    const t = parseFloat(toneladas);
-    const v = parseFloat(valorDisplay);
-    const newErrors: { toneladas?: string; valor?: string } = {};
+    const p = parseFloat(produtividade);
+    const v = parseFloat(valorCentavos);
+    const newErrors: { produtividade?: string; valor?: string } = {};
 
-    if (!toneladas || isNaN(t) || t <= 0) {
-      newErrors.toneladas = 'Digite a quantidade de toneladas';
+    if (!produtividade || isNaN(p) || p <= 0) {
+      newErrors.produtividade = 'Digite a produtividade em kg por braça²';
     }
-    if (!valorDisplay || isNaN(v) || v <= 0) {
-      newErrors.valor = 'Digite o valor por tonelada';
+    if (!valorCentavos || isNaN(v) || v <= 0) {
+      newErrors.valor = 'Digite o valor por tonelada em centavos';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -60,51 +60,55 @@ const PaymentStep: React.FC<PaymentStepProps> = ({
         <VStack spacing={6}>
           <FormControl>
             <FormLabel fontSize="lg" fontWeight="bold">
-              Quantas toneladas foram cortadas?
+              Produtividade (kg por braça²)
             </FormLabel>
-            <Input
-              type="number"
-              inputMode="numeric"
-              value={toneladas}
-              onChange={e => {
-                setErrors(prev => ({ ...prev, toneladas: undefined }));
-                onToneladasChange(e.target.value);
-              }}
-              placeholder="0"
-              fontSize="2xl"
-              height="64px"
-              borderWidth={2}
-              borderColor={errors.toneladas ? 'red.400' : 'gray.300'}
-              _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
-            />
-            {errors.toneladas && (
-              <Text color="red.500" fontSize="md" mt={2}>{errors.toneladas}</Text>
+            <InputGroup size="lg">
+              <Input
+                type="number"
+                inputMode="numeric"
+                value={produtividade}
+                onChange={e => {
+                  setErrors(prev => ({ ...prev, produtividade: undefined }));
+                  onProdutividadeChange(e.target.value);
+                }}
+                placeholder="1700"
+                fontSize="2xl"
+                height="64px"
+                borderWidth={2}
+                borderColor={errors.produtividade ? 'red.400' : 'gray.300'}
+                _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
+              />
+              <InputRightAddon height="64px" fontSize="md" bg="gray.100">kg/br²</InputRightAddon>
+            </InputGroup>
+            <Text fontSize="sm" color="gray.500" mt={1}>Padrão: 1700 kg/braça²</Text>
+            {errors.produtividade && (
+              <Text color="red.500" fontSize="md" mt={2}>{errors.produtividade}</Text>
             )}
           </FormControl>
 
           <FormControl>
             <FormLabel fontSize="lg" fontWeight="bold">
-              Valor por tonelada (%)
+              Valor por Tonelada (centavos)
             </FormLabel>
             <InputGroup size="lg">
               <Input
-                type="text"
-                name="valorPorTonelada"
-                value={valorDisplay}
+                type="number"
+                inputMode="numeric"
+                value={valorCentavos}
                 onChange={e => {
                   setErrors(prev => ({ ...prev, valor: undefined }));
-                  onValorChange(e);
+                  onValorCentavosChange(e.target.value);
                 }}
-                placeholder="20"
+                placeholder="25"
                 fontSize="2xl"
                 height="64px"
                 borderWidth={2}
                 borderColor={errors.valor ? 'red.400' : 'gray.300'}
                 _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
               />
-              <InputRightAddon height="64px" fontSize="xl" bg="gray.100">%</InputRightAddon>
+              <InputRightAddon height="64px" fontSize="xl" bg="gray.100">¢</InputRightAddon>
             </InputGroup>
-            <Text fontSize="sm" color="gray.500" mt={1}>Ex: Digite 20 para 20%</Text>
+            <Text fontSize="sm" color="gray.500" mt={1}>Ex: Digite 25 para R$ 0,25 por tonelada</Text>
             {errors.valor && (
               <Text color="red.500" fontSize="md" mt={2}>{errors.valor}</Text>
             )}

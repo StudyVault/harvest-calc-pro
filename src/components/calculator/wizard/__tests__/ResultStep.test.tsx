@@ -9,22 +9,25 @@ const renderWithChakra = (component: React.ReactElement) =>
   render(<ChakraProvider theme={theme}>{component}</ChakraProvider>);
 
 describe('ResultStep', () => {
+  // area=100 braças², produtividade=1700 kg/br², valorCentavos=25
+  // toneladas = 100 * 1700 / 1000 = 170
+  // valorTotal = 170 * 0.25 = R$ 42.50
   const baseProps = {
-    valorTotal: 1260.0,
-    area: 210,
-    toneladas: 3,
-    valorPorTonelada: 0.2,
+    valorTotal: 42.5,
+    area: 100,
+    produtividade: 1700,
+    valorCentavos: 25,
     onNewCalculation: jest.fn(),
   };
 
   it('displays the formatted currency value', () => {
     renderWithChakra(<ResultStep {...baseProps} />);
-    expect(screen.getByText(/1\.260,00/)).toBeInTheDocument();
+    expect(screen.getByText(/42,50/)).toBeInTheDocument();
   });
 
   it('displays the area', () => {
     renderWithChakra(<ResultStep {...baseProps} />);
-    expect(screen.getByText(/210/)).toBeInTheDocument();
+    expect(screen.getByText(/100/)).toBeInTheDocument();
   });
 
   it('shows NOVO CÁLCULO button', () => {
