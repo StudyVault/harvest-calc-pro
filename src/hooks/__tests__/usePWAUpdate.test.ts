@@ -35,7 +35,9 @@ describe('usePWAUpdate', () => {
     mockServiceWorker = {
       register: jest.fn().mockResolvedValue(mockRegistration),
       ready: Promise.resolve(mockRegistration),
-      controller: { state: 'activated' }
+      controller: { state: 'activated' },
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
     };
 
     // Setup navigator mock

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface PWAUpdateHookReturn {
   updateAvailable: boolean;
@@ -6,7 +6,7 @@ interface PWAUpdateHookReturn {
 }
 
 export const usePWAUpdate = (onUpdateAvailable?: () => void): PWAUpdateHookReturn => {
-  const updateAvailableRef = useRef(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
 
   // Check if Safari (has limited PWA support)
@@ -17,77 +17,64 @@ export const usePWAUpdate = (onUpdateAvailable?: () => void): PWAUpdateHookRetur
       console.log('PWA: Safari detected - Service Worker registration disabled due to limited support');
       return;
     }
+    if (!('serviceWorker' in navigator)) return;
 
-    // Use Vite PWA's built-in registration in development
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+    const isDevelopment =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     if (isDevelopment) {
       console.log('PWA: Development mode - using Vite PWA plugin registration');
-      
-      // Listen for updates from Vite PWA plugin
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registrationRef.current = registration;
-          
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  updateAvailableRef.current = true;
-                  onUpdateAvailable?.();
-                }
-              });
-            }
-          });
-        });
-      }
       return;
     }
 
-    // Production service worker registration
-    if ('serviceWorker' in navigator) {
-      const registerSW = async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/harvest-calc-pro/sw.js', {
-            scope: '/harvest-calc-pro/'
-          });
-          
-          registrationRef.current = registration;
-          console.log('PWA: Service worker registered successfully');
-          
-          // Check for waiting worker
-          if (registration.waiting) {
-            updateAvailableRef.current = true;
-            onUpdateAvailable?.();
-          }
-          
-          // Listen for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  updateAvailableRef.current = true;
-                  onUpdateAvailable?.();
-                }
-              });
+    // When the SW updates and claims this client, reload to pick up new assets
+    const sw = navigator.serviceWorker;
+    const handleControllerChange = () => {
+      window.location.reload();
+    };
+    sw.addEventListener('controllerchange', handleControllerChange);
+
+    const registerSW = async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('/harvest-calc-pro/sw.js', {
+          scope: '/harvest-calc-pro/',
+        });
+
+        registrationRef.current = registration;
+        console.log('PWA: Service worker registered successfully');
+
+        const onNewWorker = (worker: ServiceWorker) => {
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+              setUpdateAvailable(true);
+              onUpdateAvailable?.();
             }
           });
-          
-          // Check for updates periodically
-          const interval = setInterval(() => {
-            registration.update().catch(console.error);
-          }, 60000);
-          
-          return () => clearInterval(interval);
-        } catch (error) {
-          console.error('PWA: Failed to register service worker:', error);
-        }
-      };
+        };
 
-      registerSW();
-    }
+        // Worker already waiting (user revisited after deploy)
+        if (registration.waiting) {
+          setUpdateAvailable(true);
+          onUpdateAvailable?.();
+        }
+
+        registration.addEventListener('updatefound', () => {
+          if (registration.installing) onNewWorker(registration.installing);
+        });
+
+        // Poll for updates every minute
+        const interval = setInterval(() => registration.update().catch(console.error), 60_000);
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.error('PWA: Failed to register service worker:', error);
+      }
+    };
+
+    registerSW();
+
+    return () => {
+      sw.removeEventListener('controllerchange', handleControllerChange);
+    };
   }, [onUpdateAvailable, isSafari]);
 
   const updateApp = () => {
@@ -97,10 +84,7 @@ export const usePWAUpdate = (onUpdateAvailable?: () => void): PWAUpdateHookRetur
     }
   };
 
-  return {
-    updateAvailable: updateAvailableRef.current,
-    updateApp
-  };
+  return { updateAvailable, updateApp };
 };
 
 export default usePWAUpdate;
