@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { usePercentageInput } from '../usePercentageInput';
 
@@ -14,7 +15,7 @@ describe('usePercentageInput', () => {
     act(() => {
       result.current.handlePercentageChange({
         target: { value: '50' }
-      } as any, mockCallback);
+      } as React.ChangeEvent<HTMLInputElement>, mockCallback);
     });
 
     expect(result.current.displayValue).toBe('50');
@@ -28,7 +29,7 @@ describe('usePercentageInput', () => {
     act(() => {
       result.current.handlePercentageChange({
         target: { value: '' }
-      } as any, mockCallback);
+      } as React.ChangeEvent<HTMLInputElement>, mockCallback);
     });
 
     expect(result.current.displayValue).toBe('');
@@ -42,7 +43,7 @@ describe('usePercentageInput', () => {
     act(() => {
       result.current.handlePercentageChange({
         target: { value: '150' }
-      } as any, mockCallback);
+      } as React.ChangeEvent<HTMLInputElement>, mockCallback);
     });
 
     expect(result.current.displayValue).toBe('100');
@@ -56,7 +57,7 @@ describe('usePercentageInput', () => {
     act(() => {
       result.current.handlePercentageChange({
         target: { value: 'abc' }
-      } as any, mockCallback);
+      } as React.ChangeEvent<HTMLInputElement>, mockCallback);
     });
 
     expect(result.current.displayValue).toBe('');
@@ -80,7 +81,7 @@ describe('usePercentageInput', () => {
     act(() => {
       result.current.handlePercentageChange({
         target: { value: '12.5' }
-      } as any, mockCallback);
+      } as React.ChangeEvent<HTMLInputElement>, mockCallback);
     });
 
     expect(result.current.displayValue).toBe('100');

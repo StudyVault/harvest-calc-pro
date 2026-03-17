@@ -17,8 +17,8 @@ const mockRegistration = {
 };
 
 describe('usePWAUpdate', () => {
-  let originalNavigator: any;
-  let mockServiceWorker: any;
+  let originalNavigator: typeof globalThis.navigator;
+  let mockServiceWorker: Record<string, unknown>;
   let mockUserAgent: string;
   let mockHostname: string;
   let mockAddEventListener: jest.Mock;

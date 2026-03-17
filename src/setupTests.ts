@@ -10,12 +10,12 @@ configure({ testIdAttribute: 'data-testid' });
 
 // Mock para ResizeObserver que não está disponível no JSDOM
 global.ResizeObserver = class ResizeObserver {
-  observe = jest.fn().mockImplementation((_element: Element) => {
+  observe = jest.fn().mockImplementation(() => {
     // Simula a observação do elemento
     return undefined;
   });
 
-  unobserve = jest.fn().mockImplementation((_element: Element) => {
+  unobserve = jest.fn().mockImplementation(() => {
     // Simula a remoção da observação do elemento
     return undefined;
   });

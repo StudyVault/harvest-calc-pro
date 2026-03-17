@@ -39,12 +39,11 @@ describe('WizardContainer', () => {
     fireEvent.click(screen.getByText('PRÓXIMO →'));
 
     // Steps 2-5: fill each side
-    const sides = ['a', 'b', 'c', 'd'];
-    for (const _ of sides) {
+    [0, 1, 2, 3].forEach(() => {
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '10' } });
       fireEvent.click(screen.getByText('PRÓXIMO →'));
-    }
+    });
 
     // Step 6: payment — fill both fields explicitly
     const inputs = screen.getAllByRole('spinbutton');
@@ -64,12 +63,11 @@ describe('WizardContainer', () => {
     // Quick flow to result
     fireEvent.click(screen.getByText('RETÂNGULO'));
     fireEvent.click(screen.getByText('PRÓXIMO →'));
-    const sides = ['a', 'b', 'c', 'd'];
-    for (const _ of sides) {
+    [0, 1, 2, 3].forEach(() => {
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '10' } });
       fireEvent.click(screen.getByText('PRÓXIMO →'));
-    }
+    });
     const inputs = screen.getAllByRole('spinbutton');
     fireEvent.change(inputs[0], { target: { value: '3' } });
     const valorInput = screen.getByRole('textbox');
