@@ -36,7 +36,7 @@ describe('PaymentStep', () => {
   it('shows error when toneladas is zero and CALCULAR clicked', () => {
     renderWithChakra(<PaymentStep {...baseProps} toneladas="0" />);
     fireEvent.click(screen.getByText(/calcular/i));
-    expect(screen.getAllByText(/toneladas/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('Digite a quantidade de toneladas')).toBeInTheDocument();
   });
 
   it('calls onNext when all fields are valid', () => {
