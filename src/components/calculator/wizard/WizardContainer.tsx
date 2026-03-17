@@ -40,6 +40,10 @@ const INITIAL_STATE: WizardState = {
   result: null,
 };
 
+// Formula preserved from the original CalculadoraCorteCana.calcularPagamento:
+// rectangle: average of opposite sides × average of other pair (trapezoid approximation)
+// triangle: average of A+B sides × half of C (base)
+// Note: useAreaCalculations hook uses a different formula and was not used by the original component.
 const calculateResult = (state: WizardState): { area: number; valorTotal: number } => {
   const { a, b, c, d } = state.sides;
   const area =
