@@ -79,7 +79,7 @@ const SideMeasureStep: React.FC<SideMeasureStepProps> = ({
                 _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
               />
               <InputRightAddon height="64px" fontSize="xl" bg="gray.100">
-                br
+                bç
               </InputRightAddon>
             </InputGroup>
             {error && (

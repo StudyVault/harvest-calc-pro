@@ -78,7 +78,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({
                 borderColor={errors.produtividade ? 'red.400' : 'gray.300'}
                 _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 3px rgba(46,125,50,0.2)' }}
               />
-              <InputRightAddon height="64px" fontSize="md" bg="gray.100">kg/br²</InputRightAddon>
+              <InputRightAddon height="64px" fontSize="md" bg="gray.100">kg/bç²</InputRightAddon>
             </InputGroup>
             <Text fontSize="sm" color="gray.500" mt={1}>Padrão: 1700 kg/braça²</Text>
             {errors.produtividade && (
